@@ -3,14 +3,16 @@
 import { motion } from 'framer-motion';
 import { useAlgorithm } from '@/context/AlgorithmContext';
 import { useAlgorithmExecution } from '@/hooks/useAlgorithmExecution';
+import { useGifExport } from '@/hooks/useGifExport';
 import { generateRandomArray } from '@/lib/utils';
 import { generateRandomGraph } from '@/utils/graphGenerator';
-import { Play, Pause, RotateCcw, SkipBack, SkipForward, Gauge, Shuffle } from 'lucide-react';
+import { Play, Pause, RotateCcw, SkipBack, SkipForward, Gauge, Shuffle, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function ControlPanel() {
   const { state, dispatch, selectedAlgorithm } = useAlgorithm();
   const { generateSteps } = useAlgorithmExecution();
+  const { exportToGif, isExporting, reset: resetCapturedFrames } = useGifExport();
 
   const handlePlay = () => {
     if (state.isRunning) {
@@ -22,6 +24,7 @@ export default function ControlPanel() {
   };
 
   const handleReset = () => {
+    resetCapturedFrames();
     dispatch({ type: 'RESET' });
   };
 
@@ -59,6 +62,7 @@ export default function ControlPanel() {
 
   const handleShuffle = () => {
     if (selectedAlgorithm && !state.isRunning) {
+      resetCapturedFrames();
       if (selectedAlgorithm.category === 'graph') {
         // For graph algorithms, generate a new random graph
         // Use current graph size if available, otherwise default to 8
@@ -75,6 +79,18 @@ export default function ControlPanel() {
         dispatch({ type: 'RESET' });
       }
     }
+  };
+
+  const handleExportGif = async () => {
+    if (!selectedAlgorithm || state.steps.length === 0 || isExporting) return;
+    const graphContainer = document.querySelector('[data-graph-container]') as HTMLElement | null;
+    const arrayContainer = document.querySelector('[data-array-container]') as HTMLElement | null;
+    const container = (selectedAlgorithm.category === 'graph' ? graphContainer : arrayContainer) || graphContainer || arrayContainer;
+    if (!container) return;
+
+    // Encode already captured frames; do not change visualization state
+    const delayMs = Math.max(60, Math.min(state.speed, 400));
+    await exportToGif({ delayMs, width: container.offsetWidth, height: container.offsetHeight });
   };
 
   const speedOptions = [
@@ -105,6 +121,25 @@ export default function ControlPanel() {
               title={selectedAlgorithm.category === 'graph' ? 'Generate New Random Graph' : 'Shuffle Array'}
             >
               <Shuffle className="w-5 h-5" />
+            </motion.button>
+          )}
+
+          {/* Export GIF Button - show only when a run has completed and frames exist */}
+          {!state.isRunning && selectedAlgorithm && state.steps.length > 0 && state.currentStep >= state.totalSteps - 1 && (
+            <motion.button
+              onClick={handleExportGif}
+              disabled={isExporting}
+              className={cn(
+                'p-3 rounded-full transition-colors',
+                isExporting
+                  ? 'bg-slate-100 text-slate-400 cursor-not-allowed dark:bg-slate-700'
+                  : 'bg-green-500 hover:bg-green-600 text-white'
+              )}
+              whileHover={!isExporting ? { scale: 1.05 } : {}}
+              whileTap={!isExporting ? { scale: 0.95 } : {}}
+              title="Export Animation to GIF"
+            >
+              <Download className="w-5 h-5" />
             </motion.button>
           )}
 

@@ -7,9 +7,11 @@ import { bubblesortSteps } from '@/algorithms/sorting/bubblesort';
 import { mergesortSteps } from '@/algorithms/sorting/mergesort';
 import { dijkstraSteps } from '@/algorithms/graph/dijkstra';
 import { bfsSteps } from '@/algorithms/graph/bfs';
+import { useGifExport } from '@/hooks/useGifExport';
 
 export function useAlgorithmExecution() {
   const { state, dispatch, selectedAlgorithm } = useAlgorithm();
+  const { captureFrame, reset: resetFrames } = useGifExport();
 
   const generateSteps = useCallback(() => {
     if (!selectedAlgorithm || !state.data.length) return;
@@ -79,11 +81,30 @@ export function useAlgorithmExecution() {
     if (state.isRunning && !state.isPaused && state.steps.length > 0) {
       const timer = setTimeout(() => {
         executeStep();
+        // After advancing a step, capture the settled DOM in the background
+        const container = (document.querySelector('[data-graph-container]') as HTMLElement | null)
+          || (document.querySelector('[data-array-container]') as HTMLElement | null);
+        if (container) {
+          // Give a brief time for DOM to update and motion to settle
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              // Best-effort; ignore failures
+              captureFrame(container, container.offsetWidth, container.offsetHeight).catch(() => {});
+            }, 50);
+          });
+        }
       }, state.speed);
 
       return () => clearTimeout(timer);
     }
   }, [state.isRunning, state.isPaused, state.currentStep, state.speed, executeStep]);
+
+  // When a new run starts, clear previous captured frames
+  useEffect(() => {
+    if (state.isRunning && state.currentStep === 0) {
+      resetFrames();
+    }
+  }, [state.isRunning, state.currentStep, resetFrames]);
 
   // Generate steps when algorithm or data changes
   useEffect(() => {

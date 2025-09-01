@@ -233,7 +233,7 @@ export default function GraphVisualization() {
       {selectedAlgorithm ? (
         <div className="space-y-4">
           {/* Graph Visualization Area */}
-          <div className="bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-xl p-8 min-h-[500px] relative overflow-hidden">
+          <div data-graph-container className="bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-xl p-8 min-h-[500px] relative overflow-hidden">
             <svg
               width="100%"
               height="500"

@@ -82,7 +82,7 @@ export default function VisualizationCanvas() {
       {selectedAlgorithm ? (
         <div className="space-y-4">
           {/* Visualization Area */}
-          <div className="bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-xl p-8 min-h-[400px] flex items-end justify-center gap-2 relative overflow-hidden">
+          <div data-array-container className="bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-xl p-8 min-h-[400px] flex items-end justify-center gap-2 relative overflow-hidden">
             {/* Grid lines for better visual reference */}
             <div className="absolute inset-0 opacity-20">
               {Array.from({ length: 5 }, (_, i) => (
