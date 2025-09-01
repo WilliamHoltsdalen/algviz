@@ -65,7 +65,7 @@ export const algorithms: Algorithm[] = [
     description: 'Explores all nodes at the present depth before moving to nodes at the next depth level.',
     timeComplexity: 'O(V + E)',
     spaceComplexity: 'O(V)',
-    isImplemented: false,
+    isImplemented: true,
   },
   {
     id: 'dfs',

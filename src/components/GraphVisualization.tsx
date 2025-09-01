@@ -6,6 +6,7 @@ import { useAlgorithm } from '@/context/AlgorithmContext';
 import { Graph, GraphNode, GraphEdge } from '@/types/graph';
 import { generateSampleGraph, generateRandomGraph } from '@/utils/graphGenerator';
 import { DijkstraStep } from '@/types/graph';
+import { BFSStep } from '@/algorithms/graph/bfs';
 
 export default function GraphVisualization() {
   const { state, dispatch, selectedAlgorithm } = useAlgorithm();
@@ -24,73 +25,165 @@ export default function GraphVisualization() {
   }, [selectedAlgorithm, graphSize, dispatch]);
 
   const getNodeColor = (nodeId: string) => {
-    const currentStep = state.steps[state.currentStep] as DijkstraStep;
+    const currentStep = state.steps[state.currentStep];
     if (!currentStep) return '#3b82f6'; // blue-500
 
-    switch (currentStep.type) {
-      case 'visit':
-        if (currentStep.nodeId === nodeId) {
-          return '#ef4444'; // red-500 - currently visiting
-        }
-        if (currentStep.distances?.[nodeId] !== undefined && currentStep.distances[nodeId] < Infinity) {
-          return '#22c55e'; // green-500 - visited
-        }
-        break;
-      case 'relax':
-        if (currentStep.nodeId === nodeId) {
-          return '#eab308'; // yellow-500 - being relaxed
-        }
-        if (currentStep.distances?.[nodeId] !== undefined && currentStep.distances[nodeId] < Infinity) {
-          return '#22c55e'; // green-500 - visited
-        }
-        break;
-      case 'path':
-        if (currentStep.path?.includes(nodeId)) {
-          return '#8b5cf6'; // violet-500 - on shortest path
-        }
-        if (currentStep.distances?.[nodeId] !== undefined && currentStep.distances[nodeId] < Infinity) {
-          return '#22c55e'; // green-500 - visited
-        }
-        break;
-      case 'complete':
-        if (currentStep.path?.includes(nodeId)) {
-          return '#8b5cf6'; // violet-500 - on shortest path
-        }
-        if (currentStep.distances?.[nodeId] !== undefined && currentStep.distances[nodeId] < Infinity) {
-          return '#22c55e'; // green-500 - visited
-        }
-        break;
+    // Handle Dijkstra steps
+    if ('distances' in currentStep) {
+      const dijkstraStep = currentStep as DijkstraStep;
+      switch (dijkstraStep.type) {
+        case 'visit':
+          if (dijkstraStep.nodeId === nodeId) {
+            return '#ef4444'; // red-500 - currently visiting
+          }
+          if (dijkstraStep.distances?.[nodeId] !== undefined && dijkstraStep.distances[nodeId] < Infinity) {
+            return '#22c55e'; // green-500 - visited
+          }
+          break;
+        case 'relax':
+          if (dijkstraStep.nodeId === nodeId) {
+            return '#eab308'; // yellow-500 - being relaxed
+          }
+          if (dijkstraStep.distances?.[nodeId] !== undefined && dijkstraStep.distances[nodeId] < Infinity) {
+            return '#22c55e'; // green-500 - visited
+          }
+          break;
+        case 'path':
+          if (dijkstraStep.path?.includes(nodeId)) {
+            return '#8b5cf6'; // violet-500 - on shortest path
+          }
+          if (dijkstraStep.distances?.[nodeId] !== undefined && dijkstraStep.distances[nodeId] < Infinity) {
+            return '#22c55e'; // green-500 - visited
+          }
+          break;
+        case 'complete':
+          // In the final step, prioritize showing the path
+          if (dijkstraStep.path?.includes(nodeId)) {
+            return '#8b5cf6'; // violet-500 - on shortest path
+          }
+          // Only show visited nodes as green if they're not on the path
+          if (dijkstraStep.distances?.[nodeId] !== undefined && dijkstraStep.distances[nodeId] < Infinity && !dijkstraStep.path?.includes(nodeId)) {
+            return '#22c55e'; // green-500 - visited but not on path
+          }
+          break;
+      }
+    }
+
+    // Handle BFS steps
+    if ('visited' in currentStep) {
+      const bfsStep = currentStep as BFSStep;
+      switch (bfsStep.type) {
+        case 'visit':
+          if (bfsStep.nodeId === nodeId) {
+            return '#ef4444'; // red-500 - currently visiting
+          }
+          if (bfsStep.visited?.has(nodeId)) {
+            return '#22c55e'; // green-500 - visited
+          }
+          break;
+        case 'discover':
+          if (bfsStep.nodeId === nodeId) {
+            return '#f59e0b'; // amber-500 - being discovered
+          }
+          if (bfsStep.visited?.has(nodeId)) {
+            return '#22c55e'; // green-500 - visited
+          }
+          break;
+        case 'explore':
+          if (bfsStep.nodeId === nodeId) {
+            return '#eab308'; // yellow-500 - being explored
+          }
+          if (bfsStep.visited?.has(nodeId)) {
+            return '#22c55e'; // green-500 - visited
+          }
+          break;
+        case 'path':
+          if (bfsStep.path?.includes(nodeId)) {
+            return '#8b5cf6'; // violet-500 - on path
+          }
+          if (bfsStep.visited?.has(nodeId)) {
+            return '#22c55e'; // green-500 - visited
+          }
+          break;
+        case 'complete':
+          // In the final step, prioritize showing the path
+          if (bfsStep.path?.includes(nodeId)) {
+            return '#8b5cf6'; // violet-500 - on path
+          }
+          // Only show visited nodes as green if they're not on the path
+          if (bfsStep.visited?.has(nodeId) && !bfsStep.path?.includes(nodeId)) {
+            return '#22c55e'; // green-500 - visited but not on path
+          }
+          break;
+      }
     }
 
     return '#3b82f6'; // blue-500 - unvisited
   };
 
   const getEdgeColor = (edgeId: string) => {
-    const currentStep = state.steps[state.currentStep] as DijkstraStep;
+    const currentStep = state.steps[state.currentStep];
     if (!currentStep) return '#6b7280'; // gray-500
 
-    switch (currentStep.type) {
-      case 'relax':
-        if (currentStep.edgeId === edgeId) {
-          return '#eab308'; // yellow-500 - being relaxed
-        }
-        break;
-      case 'path':
-        if (currentStep.path) {
-          const edge = graph.edges.find(e => e.id === edgeId);
-          if (edge && currentStep.path.includes(edge.from) && currentStep.path.includes(edge.to)) {
-            return '#8b5cf6'; // violet-500 - on shortest path
+    // Handle Dijkstra steps
+    if ('distances' in currentStep) {
+      const dijkstraStep = currentStep as DijkstraStep;
+      switch (dijkstraStep.type) {
+        case 'relax':
+          if (dijkstraStep.edgeId === edgeId) {
+            return '#eab308'; // yellow-500 - being relaxed
           }
-        }
-        break;
-      case 'complete':
-        if (currentStep.path) {
-          const edge = graph.edges.find(e => e.id === edgeId);
-          if (edge && currentStep.path.includes(edge.from) && currentStep.path.includes(edge.to)) {
-            return '#8b5cf6'; // violet-500 - on shortest path
+          break;
+        case 'path':
+          if (dijkstraStep.path) {
+            const edge = graph.edges.find(e => e.id === edgeId);
+            if (edge && dijkstraStep.path.includes(edge.from) && dijkstraStep.path.includes(edge.to)) {
+              return '#8b5cf6'; // violet-500 - on shortest path
+            }
           }
-        }
-        break;
+          break;
+        case 'complete':
+          if (dijkstraStep.path) {
+            const edge = graph.edges.find(e => e.id === edgeId);
+            if (edge && dijkstraStep.path.includes(edge.from) && dijkstraStep.path.includes(edge.to)) {
+              return '#8b5cf6'; // violet-500 - on shortest path
+            }
+          }
+          break;
+      }
+    }
+
+    // Handle BFS steps
+    if ('visited' in currentStep) {
+      const bfsStep = currentStep as BFSStep;
+      switch (bfsStep.type) {
+        case 'discover':
+          if (bfsStep.edgeId === edgeId) {
+            return '#f59e0b'; // amber-500 - being discovered
+          }
+          break;
+        case 'explore':
+          if (bfsStep.edgeId === edgeId) {
+            return '#eab308'; // yellow-500 - being explored
+          }
+          break;
+        case 'path':
+          if (bfsStep.path) {
+            const edge = graph.edges.find(e => e.id === edgeId);
+            if (edge && bfsStep.path.includes(edge.from) && bfsStep.path.includes(edge.to)) {
+              return '#8b5cf6'; // violet-500 - on path
+            }
+          }
+          break;
+        case 'complete':
+          if (bfsStep.path) {
+            const edge = graph.edges.find(e => e.id === edgeId);
+            if (edge && bfsStep.path.includes(edge.from) && bfsStep.path.includes(edge.to)) {
+              return '#8b5cf6'; // violet-500 - on path
+            }
+          }
+          break;
+      }
     }
 
     return '#6b7280'; // gray-500 - default
@@ -224,9 +317,22 @@ export default function GraphVisualization() {
             </svg>
           </div>
 
-          {/* Legend */}
+          {/* Legend and Level Info */}
           <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-4">
-            <h4 className="font-semibold text-slate-800 dark:text-slate-200 mb-2">Legend:</h4>
+            <div className="flex justify-between items-start mb-2">
+              <h4 className="font-semibold text-slate-800 dark:text-slate-200">Legend:</h4>
+              {/* BFS Level Indicator */}
+              {state.steps.length > 0 && 'visited' in state.steps[state.currentStep] && (
+                <div className="text-right">
+                  <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Current Level: {state.steps[state.currentStep].level || 0}
+                  </div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400">
+                    Visited: {state.steps[state.currentStep].visited?.size || 0} nodes
+                  </div>
+                </div>
+              )}
+            </div>
             <div className="flex flex-wrap gap-4 text-sm">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-blue-500"></div>
@@ -238,7 +344,11 @@ export default function GraphVisualization() {
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-yellow-500"></div>
-                <span className="text-slate-600 dark:text-slate-400">Being Relaxed</span>
+                <span className="text-slate-600 dark:text-slate-400">Being Relaxed/Explored</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-amber-500"></div>
+                <span className="text-slate-600 dark:text-slate-400">Being Discovered (BFS)</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-green-500"></div>
@@ -246,7 +356,7 @@ export default function GraphVisualization() {
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-violet-500"></div>
-                <span className="text-slate-600 dark:text-slate-400">Shortest Path</span>
+                <span className="text-slate-600 dark:text-slate-400">Path</span>
               </div>
             </div>
           </div>

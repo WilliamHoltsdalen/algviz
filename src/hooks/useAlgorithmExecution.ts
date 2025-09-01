@@ -6,6 +6,7 @@ import { quicksortSteps } from '@/algorithms/sorting/quicksort';
 import { bubblesortSteps } from '@/algorithms/sorting/bubblesort';
 import { mergesortSteps } from '@/algorithms/sorting/mergesort';
 import { dijkstraSteps } from '@/algorithms/graph/dijkstra';
+import { bfsSteps } from '@/algorithms/graph/bfs';
 
 export function useAlgorithmExecution() {
   const { state, dispatch, selectedAlgorithm } = useAlgorithm();
@@ -38,6 +39,16 @@ export function useAlgorithmExecution() {
         const startNode = state.graph.nodes.find((n: any) => n.isStart)?.id || 'A';
         const endNode = state.graph.nodes.find((n: any) => n.isEnd)?.id || 'G';
         steps = dijkstraSteps(state.graph, startNode, endNode);
+        break;
+      case 'bfs':
+        // For BFS, we need to find start and end nodes
+        if (!state.graph) {
+          steps = [];
+          break;
+        }
+        const bfsStartNode = state.graph.nodes.find((n: any) => n.isStart)?.id || 'A';
+        const bfsEndNode = state.graph.nodes.find((n: any) => n.isEnd)?.id || 'G';
+        steps = bfsSteps(state.graph, bfsStartNode, bfsEndNode);
         break;
       default:
         steps = [];
