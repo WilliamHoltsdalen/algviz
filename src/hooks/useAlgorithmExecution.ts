@@ -12,6 +12,11 @@ export function useAlgorithmExecution() {
   const generateSteps = useCallback(() => {
     if (!selectedAlgorithm || !state.data.length) return;
 
+    // Store the original data if not already stored
+    if (state.originalData.length === 0) {
+      dispatch({ type: 'SET_ORIGINAL_DATA', payload: [...state.data] });
+    }
+
     let steps;
     switch (selectedAlgorithm.id) {
       case 'quicksort':
@@ -28,7 +33,7 @@ export function useAlgorithmExecution() {
     }
 
     dispatch({ type: 'SET_STEPS', payload: steps });
-  }, [selectedAlgorithm, state.data, dispatch]);
+  }, [selectedAlgorithm, state.data, state.originalData.length, dispatch]);
 
   const executeStep = useCallback(() => {
     if (state.currentStep < state.totalSteps - 1) {

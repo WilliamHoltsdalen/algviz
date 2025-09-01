@@ -15,6 +15,7 @@ export default function VisualizationCanvas() {
     if (selectedAlgorithm) {
       const newData = generateRandomArray(arraySize);
       dispatch({ type: 'SET_DATA', payload: newData });
+      dispatch({ type: 'SET_ORIGINAL_DATA', payload: newData });
       dispatch({ type: 'RESET' });
     }
   }, [selectedAlgorithm, arraySize, dispatch]);

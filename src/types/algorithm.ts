@@ -26,5 +26,6 @@ export interface VisualizationState {
   totalSteps: number;
   speed: number;
   data: number[];
+  originalData: number[]; // Store the original unsorted array
   steps: AlgorithmStep[];
 }
