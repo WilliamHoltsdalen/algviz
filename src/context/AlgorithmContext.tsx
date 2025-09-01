@@ -40,7 +40,12 @@ function algorithmReducer(state: VisualizationState, action: AlgorithmAction): V
     case 'SET_ORIGINAL_DATA':
       return { ...state, originalData: action.payload };
     case 'SET_STEPS':
-      return { ...state, steps: action.payload, totalSteps: action.payload.length };
+      return { 
+        ...state, 
+        steps: action.payload, 
+        totalSteps: action.payload.length,
+        currentStep: Math.min(state.currentStep, Math.max(action.payload.length - 1, 0))
+      };
     case 'SET_RUNNING':
       return { ...state, isRunning: action.payload };
     case 'SET_PAUSED':
@@ -57,7 +62,7 @@ function algorithmReducer(state: VisualizationState, action: AlgorithmAction): V
         steps: state.steps 
       };
     case 'NEXT_STEP':
-      return { ...state, currentStep: Math.min(state.currentStep + 1, state.totalSteps - 1) };
+      return { ...state, currentStep: Math.min(state.currentStep + 1, Math.max(state.totalSteps - 1, 0)) };
     case 'PREV_STEP':
       return { ...state, currentStep: Math.max(state.currentStep - 1, 0) };
     default:

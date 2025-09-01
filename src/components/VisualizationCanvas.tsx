@@ -181,16 +181,16 @@ export default function VisualizationCanvas() {
             <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-4">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                  Step {state.currentStep + 1} of {state.totalSteps}
+                  Step {Math.min(state.currentStep + 1, state.totalSteps)} of {state.totalSteps}
                 </span>
                 <div className="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2 mx-4">
                   <div
                     className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${((state.currentStep + 1) / state.totalSteps) * 100}%` }}
+                    style={{ width: `${Math.min(((state.currentStep + 1) / state.totalSteps) * 100, 100)}%` }}
                   />
                 </div>
                 <span className="text-sm text-slate-600 dark:text-slate-400">
-                  {Math.round(((state.currentStep + 1) / state.totalSteps) * 100)}%
+                  {Math.min(Math.round(((state.currentStep + 1) / state.totalSteps) * 100), 100)}%
                 </span>
               </div>
               {state.steps[state.currentStep]?.message && (
