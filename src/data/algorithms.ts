@@ -56,7 +56,7 @@ export const algorithms: Algorithm[] = [
     description: 'Finds the shortest path between nodes in a weighted graph.',
     timeComplexity: 'O((V + E) log V)',
     spaceComplexity: 'O(V)',
-    isImplemented: false,
+    isImplemented: true,
   },
   {
     id: 'bfs',

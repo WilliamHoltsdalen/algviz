@@ -5,6 +5,7 @@ import { useAlgorithm } from '@/context/AlgorithmContext';
 import { quicksortSteps } from '@/algorithms/sorting/quicksort';
 import { bubblesortSteps } from '@/algorithms/sorting/bubblesort';
 import { mergesortSteps } from '@/algorithms/sorting/mergesort';
+import { dijkstraSteps } from '@/algorithms/graph/dijkstra';
 
 export function useAlgorithmExecution() {
   const { state, dispatch, selectedAlgorithm } = useAlgorithm();
@@ -28,12 +29,22 @@ export function useAlgorithmExecution() {
       case 'mergesort':
         steps = mergesortSteps(state.data);
         break;
+      case 'dijkstra':
+        // For Dijkstra, we need to find start and end nodes
+        if (!state.graph) {
+          steps = [];
+          break;
+        }
+        const startNode = state.graph.nodes.find((n: any) => n.isStart)?.id || 'A';
+        const endNode = state.graph.nodes.find((n: any) => n.isEnd)?.id || 'G';
+        steps = dijkstraSteps(state.graph, startNode, endNode);
+        break;
       default:
         steps = [];
     }
 
     dispatch({ type: 'SET_STEPS', payload: steps });
-  }, [selectedAlgorithm, state.data, state.originalData.length, dispatch]);
+  }, [selectedAlgorithm, state.data, state.originalData.length, state.graph, dispatch]);
 
   const executeStep = useCallback(() => {
     if (state.currentStep < state.totalSteps - 1) {

@@ -2,7 +2,7 @@
 
 import { AlgorithmProvider } from '@/context/AlgorithmContext';
 import AlgorithmSelector from '@/components/AlgorithmSelector';
-import VisualizationCanvas from '@/components/VisualizationCanvas';
+import VisualizationWrapper from '@/components/VisualizationWrapper';
 import ControlPanel from '@/components/ControlPanel';
 import AlgorithmInfo from '@/components/AlgorithmInfo';
 
@@ -31,7 +31,7 @@ export default function Home() {
 
             {/* Visualization Area */}
             <div className="lg:col-span-3 space-y-6">
-              <VisualizationCanvas />
+              <VisualizationWrapper />
               <ControlPanel />
               <AlgorithmInfo />
             </div>

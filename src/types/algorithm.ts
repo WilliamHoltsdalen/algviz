@@ -27,5 +27,7 @@ export interface VisualizationState {
   speed: number;
   data: number[];
   originalData: number[]; // Store the original unsorted array
+  graph?: any; // Store the current graph for graph algorithms
+  originalGraph?: any; // Store the original graph
   steps: AlgorithmStep[];
 }

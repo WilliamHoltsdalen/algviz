@@ -13,6 +13,8 @@ interface AlgorithmContextType {
 type AlgorithmAction =
   | { type: 'SET_DATA'; payload: number[] }
   | { type: 'SET_ORIGINAL_DATA'; payload: number[] }
+  | { type: 'SET_GRAPH'; payload: any }
+  | { type: 'SET_ORIGINAL_GRAPH'; payload: any }
   | { type: 'SET_STEPS'; payload: AlgorithmStep[] }
   | { type: 'SET_RUNNING'; payload: boolean }
   | { type: 'SET_PAUSED'; payload: boolean }
@@ -30,6 +32,8 @@ const initialState: VisualizationState = {
   speed: 1000,
   data: [],
   originalData: [],
+  graph: undefined,
+  originalGraph: undefined,
   steps: [],
 };
 
@@ -39,6 +43,10 @@ function algorithmReducer(state: VisualizationState, action: AlgorithmAction): V
       return { ...state, data: action.payload };
     case 'SET_ORIGINAL_DATA':
       return { ...state, originalData: action.payload };
+    case 'SET_GRAPH':
+      return { ...state, graph: action.payload };
+    case 'SET_ORIGINAL_GRAPH':
+      return { ...state, originalGraph: action.payload };
     case 'SET_STEPS':
       return { 
         ...state, 
@@ -59,6 +67,8 @@ function algorithmReducer(state: VisualizationState, action: AlgorithmAction): V
         ...initialState, 
         data: state.originalData, 
         originalData: state.originalData,
+        graph: state.originalGraph,
+        originalGraph: state.originalGraph,
         steps: state.steps 
       };
     case 'NEXT_STEP':
