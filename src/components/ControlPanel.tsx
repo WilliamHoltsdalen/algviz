@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useAlgorithm } from '@/context/AlgorithmContext';
 import { useAlgorithmExecution } from '@/hooks/useAlgorithmExecution';
 import { generateRandomArray } from '@/lib/utils';
+import { generateRandomGraph } from '@/utils/graphGenerator';
 import { Play, Pause, RotateCcw, SkipBack, SkipForward, Gauge, Shuffle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -56,12 +57,23 @@ export default function ControlPanel() {
     dispatch({ type: 'SET_SPEED', payload: speed });
   };
 
-  const handleShuffleArray = () => {
+  const handleShuffle = () => {
     if (selectedAlgorithm && !state.isRunning) {
-      const newData = generateRandomArray(state.data.length);
-      dispatch({ type: 'SET_DATA', payload: newData });
-      dispatch({ type: 'SET_ORIGINAL_DATA', payload: newData });
-      dispatch({ type: 'RESET' });
+      if (selectedAlgorithm.category === 'graph') {
+        // For graph algorithms, generate a new random graph
+        // Use current graph size if available, otherwise default to 8
+        const currentGraphSize = state.graph?.nodes?.length || 8;
+        const newGraph = generateRandomGraph(currentGraphSize);
+        dispatch({ type: 'SET_GRAPH', payload: newGraph });
+        dispatch({ type: 'SET_ORIGINAL_GRAPH', payload: newGraph });
+        dispatch({ type: 'RESET' });
+      } else {
+        // For sorting algorithms, shuffle the array
+        const newData = generateRandomArray(state.data.length);
+        dispatch({ type: 'SET_DATA', payload: newData });
+        dispatch({ type: 'SET_ORIGINAL_DATA', payload: newData });
+        dispatch({ type: 'RESET' });
+      }
     }
   };
 
@@ -83,14 +95,14 @@ export default function ControlPanel() {
       <div className="space-y-6">
         {/* Main Controls */}
         <div className="flex items-center justify-center gap-4">
-          {/* Shuffle Array Button - only show when not running */}
+          {/* Shuffle Button - only show when not running */}
           {!state.isRunning && selectedAlgorithm && (
             <motion.button
-              onClick={handleShuffleArray}
+              onClick={handleShuffle}
               className="p-3 rounded-full bg-purple-500 hover:bg-purple-600 text-white transition-colors"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              title="Shuffle Array"
+              title={selectedAlgorithm.category === 'graph' ? 'Generate New Graph' : 'Shuffle Array'}
             >
               <Shuffle className="w-5 h-5" />
             </motion.button>

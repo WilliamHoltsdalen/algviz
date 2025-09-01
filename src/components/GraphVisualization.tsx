@@ -24,6 +24,13 @@ export default function GraphVisualization() {
     }
   }, [selectedAlgorithm, graphSize, dispatch]);
 
+  // Update local graph state when context graph changes (e.g., from shuffle)
+  useEffect(() => {
+    if (state.graph && selectedAlgorithm?.category === 'graph') {
+      setGraph(state.graph);
+    }
+  }, [state.graph, selectedAlgorithm]);
+
   const getNodeColor = (nodeId: string) => {
     const currentStep = state.steps[state.currentStep];
     if (!currentStep) return '#3b82f6'; // blue-500
@@ -325,10 +332,10 @@ export default function GraphVisualization() {
               {state.steps.length > 0 && 'visited' in state.steps[state.currentStep] && (
                 <div className="text-right">
                   <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    Current Level: {state.steps[state.currentStep].level || 0}
+                    Current Level: {(state.steps[state.currentStep] as any).level || 0}
                   </div>
                   <div className="text-xs text-slate-500 dark:text-slate-400">
-                    Visited: {state.steps[state.currentStep].visited?.size || 0} nodes
+                    Visited: {(state.steps[state.currentStep] as any).visited?.size || 0} nodes
                   </div>
                 </div>
               )}

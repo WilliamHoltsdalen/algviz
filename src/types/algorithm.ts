@@ -10,14 +10,30 @@ export interface Algorithm {
   isImplemented: boolean;
 }
 
-export interface AlgorithmStep {
+// Base step interface for common properties
+export interface BaseAlgorithmStep {
+  type: string;
+  message?: string;
+}
+
+// Array-based algorithm steps (sorting)
+export interface ArrayAlgorithmStep extends BaseAlgorithmStep {
   type: 'compare' | 'swap' | 'move' | 'highlight' | 'complete';
   indices?: number[];
   values?: number[];
-  message?: string;
-  data?: any;
   array?: number[]; // Current state of the array after this step
 }
+
+// Graph-based algorithm steps
+export interface GraphAlgorithmStep extends BaseAlgorithmStep {
+  type: string;
+  nodeId?: string;
+  edgeId?: string;
+  data?: any;
+}
+
+// Union type for all algorithm steps
+export type AlgorithmStep = ArrayAlgorithmStep | GraphAlgorithmStep;
 
 export interface VisualizationState {
   isRunning: boolean;
@@ -31,3 +47,4 @@ export interface VisualizationState {
   originalGraph?: any; // Store the original graph
   steps: AlgorithmStep[];
 }
+
