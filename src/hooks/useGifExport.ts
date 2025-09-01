@@ -3,14 +3,13 @@
 import { useCallback, useState } from 'react';
 import * as htmlToImage from 'html-to-image';
 
-// gifshot has no official types; we'll type minimal surface we use
 type GifShotOptions = {
   images: string[];
   gifWidth: number;
   gifHeight: number;
-  interval?: number; // seconds between frames
+  interval?: number; 
   numFrames?: number;
-  frameDuration?: number; // ms per frame (alternative to interval)
+  frameDuration?: number; 
   sampleInterval?: number;
   numWorkers?: number;
   fontWeight?: string | number;
@@ -22,6 +21,25 @@ declare const window: any;
 
 // Module-level storage so all hook instances share the same frames
 let framesStore: string[] = [];
+type ExportOptions = {
+  includeUI: boolean;
+  loop: boolean;
+  delayMs: number;
+};
+
+let optionsStore: ExportOptions = {
+  includeUI: true,
+  loop: true,
+  delayMs: 200,
+};
+
+export function setGlobalExportOptions(opts: Partial<ExportOptions>) {
+  optionsStore = { ...optionsStore, ...opts };
+}
+
+export function getGlobalExportOptions(): ExportOptions {
+  return optionsStore;
+}
 
 export function useGifExport() {
   const [isExporting, setIsExporting] = useState(false);
@@ -72,30 +90,53 @@ export function useGifExport() {
   );
 
   const exportToGif = useCallback(
-    async (options?: { filename?: string; delayMs?: number; width?: number; height?: number }) => {
+    async (options?: { filename?: string; delayMs?: number; width?: number; height?: number; loop?: boolean }) => {
       if (framesStore.length === 0) return;
 
       setIsExporting(true);
       try {
-        const delayMs = options?.delayMs ?? 200;
+        const delayMs = options?.delayMs ?? optionsStore.delayMs ?? 200;
         const width = options?.width ?? 800;
         const height = options?.height ?? 600;
+        const loop = options?.loop ?? optionsStore.loop ?? true;
+
+        // Calculate how many times to duplicate each frame based on desired delay
+        const baseInterval = 100; // ms between captures
+        const frameMultiplier = Math.max(1, Math.round(delayMs / baseInterval));
+        
+        // Create duplicated frames array
+        const duplicatedFrames: string[] = [];
+        framesStore.forEach((frame, index) => {
+          // Add each frame multiple times to create the desired delay effect
+          for (let i = 0; i < frameMultiplier; i++) {
+            duplicatedFrames.push(frame);
+          }
+          // If this is the final frame, add extra copies to make it linger longer before looping
+          if (index === framesStore.length - 1) {
+            const finalFrameLingerMultiplier = Math.max(2, Math.round(frameMultiplier * 2));
+            for (let i = 0; i < finalFrameLingerMultiplier; i++) {
+              duplicatedFrames.push(frame);
+            }
+          }
+        });
 
         // Lazy-load gifshot in browser to avoid SSR issues
         const gifshot = await import('gifshot');
 
         const result: GifShotResult = await new Promise((resolve, reject) => {
           const gifOptions: GifShotOptions = {
-            images: framesStore,
+            images: duplicatedFrames,
             gifWidth: width,
             gifHeight: height,
-            // gifshot uses interval in seconds
-            interval: Math.max(delayMs / 1000, 0.02),
+            interval: 0.1, // 100ms in seconds
             numWorkers: 2,
             sampleInterval: 10,
           };
+          (gifOptions as any).repeat = loop ? 0 : -1; // gif.js: 0 = forever, -1 = no repeat
+          (gifOptions as any).numLoops = loop ? 0 : 1; // alternative field in some builds
+          (gifOptions as any).loop = loop; // boolean flag some wrappers read
 
-          gifshot.createGIF(gifOptions as any, (obj: any) => {
+          (gifshot as any).createGIF(gifOptions as any, (obj: any) => {
             if (!obj || obj.error) {
               reject(new Error(obj?.errorMsg || 'Failed to create GIF'));
               return;
@@ -111,12 +152,11 @@ export function useGifExport() {
         document.body.appendChild(link);
         link.click();
         link.remove();
-      } finally {
-        setIsExporting(false);
-        reset();
-      }
-    },
-    [reset]
+              } finally {
+          setIsExporting(false);
+        }
+      },
+      []
   );
 
   return {
@@ -126,6 +166,7 @@ export function useGifExport() {
     captureFrame,
     captureAnimationFrames,
     exportToGif,
+    setExportOptions: setGlobalExportOptions,
   };
 }
 

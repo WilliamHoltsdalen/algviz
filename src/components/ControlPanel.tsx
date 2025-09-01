@@ -1,18 +1,25 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import * as Dialog from '@radix-ui/react-dialog';
+import { toast } from 'sonner';
 import { useAlgorithm } from '@/context/AlgorithmContext';
 import { useAlgorithmExecution } from '@/hooks/useAlgorithmExecution';
 import { useGifExport } from '@/hooks/useGifExport';
 import { generateRandomArray } from '@/lib/utils';
 import { generateRandomGraph } from '@/utils/graphGenerator';
-import { Play, Pause, RotateCcw, SkipBack, SkipForward, Gauge, Shuffle, Download } from 'lucide-react';
+import { Play, Pause, RotateCcw, SkipBack, SkipForward, Gauge, Shuffle, Download, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function ControlPanel() {
   const { state, dispatch, selectedAlgorithm } = useAlgorithm();
   const { generateSteps } = useAlgorithmExecution();
-  const { exportToGif, isExporting, reset: resetCapturedFrames } = useGifExport();
+  const { exportToGif, isExporting, reset: resetCapturedFrames, setExportOptions } = useGifExport();
+  const [exportSettingsOpen, setExportSettingsOpen] = useState(false);
+  const [loop, setLoop] = useState(true);
+  const [includeUI, setIncludeUI] = useState(false);
+  const [delayMs, setDelayMs] = useState(200);
 
   const handlePlay = () => {
     if (state.isRunning) {
@@ -83,14 +90,30 @@ export default function ControlPanel() {
 
   const handleExportGif = async () => {
     if (!selectedAlgorithm || state.steps.length === 0 || isExporting) return;
-    const graphContainer = document.querySelector('[data-graph-container]') as HTMLElement | null;
-    const arrayContainer = document.querySelector('[data-array-container]') as HTMLElement | null;
+    
+    toast.info('Starting GIF export...', {
+      description: 'This may take a few moments depending on the number of frames.',
+    });
+    
+    const graphContainer = document.querySelector('[data-graph-root]') as HTMLElement | null;
+    const arrayContainer = document.querySelector('[data-array-root]') as HTMLElement | null;
     const container = (selectedAlgorithm.category === 'graph' ? graphContainer : arrayContainer) || graphContainer || arrayContainer;
     if (!container) return;
 
-    // Encode already captured frames; do not change visualization state
-    const delayMs = Math.max(60, Math.min(state.speed, 400));
-    await exportToGif({ delayMs, width: container.offsetWidth, height: container.offsetHeight });
+    try {
+      await exportToGif({ 
+        width: container.offsetWidth, 
+        height: container.offsetHeight
+      });
+      toast.success('GIF exported successfully!', {
+        description: 'Your animation has been downloaded.',
+      });
+      setExportSettingsOpen(false);
+    } catch (error) {
+      toast.error('Export failed', {
+        description: 'There was an error creating your GIF. Please try again.',
+      });
+    }
   };
 
   const speedOptions = [
@@ -104,14 +127,31 @@ export default function ControlPanel() {
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
-      <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-slate-200">
-        Controls
-      </h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200">
+          Controls
+        </h2>
+        <div className="flex items-center gap-2">
+          {/* Export Button */}
+          {!state.isRunning && selectedAlgorithm && state.steps.length > 0 && state.currentStep >= state.totalSteps - 1 && (
+            <motion.button
+              onClick={() => setExportSettingsOpen(true)}
+              className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500 dark:text-slate-200 transition-colors rounded-md border border-slate-300 dark:border-slate-500"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              title="Export Animation to GIF"
+            >
+              <Download className="w-4 h-4 mr-2 inline" />
+              Export
+            </motion.button>
+          )}
+        </div>
+      </div>
 
       <div className="space-y-6">
         {/* Main Controls */}
         <div className="flex items-center justify-center gap-4">
-          {/* Shuffle Button - only show when not running */}
+          {/* Shuffle Button  */}
           {!state.isRunning && selectedAlgorithm && (
             <motion.button
               onClick={handleShuffle}
@@ -121,25 +161,6 @@ export default function ControlPanel() {
               title={selectedAlgorithm.category === 'graph' ? 'Generate New Random Graph' : 'Shuffle Array'}
             >
               <Shuffle className="w-5 h-5" />
-            </motion.button>
-          )}
-
-          {/* Export GIF Button - show only when a run has completed and frames exist */}
-          {!state.isRunning && selectedAlgorithm && state.steps.length > 0 && state.currentStep >= state.totalSteps - 1 && (
-            <motion.button
-              onClick={handleExportGif}
-              disabled={isExporting}
-              className={cn(
-                'p-3 rounded-full transition-colors',
-                isExporting
-                  ? 'bg-slate-100 text-slate-400 cursor-not-allowed dark:bg-slate-700'
-                  : 'bg-green-500 hover:bg-green-600 text-white'
-              )}
-              whileHover={!isExporting ? { scale: 1.05 } : {}}
-              whileTap={!isExporting ? { scale: 0.95 } : {}}
-              title="Export Animation to GIF"
-            >
-              <Download className="w-5 h-5" />
             </motion.button>
           )}
 
@@ -224,7 +245,7 @@ export default function ControlPanel() {
                 key={option.value}
                 onClick={() => handleSpeedChange(option.value)}
                 className={cn(
-                  'px-3 py-1 rounded-full text-sm font-medium transition-colors',
+                  'px-3 py-1 rounded-md text-sm font-medium transition-colors',
                   state.speed === option.value
                     ? 'bg-blue-500 text-white'
                     : 'bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-600 dark:text-slate-300 dark:hover:bg-slate-500'
@@ -238,7 +259,7 @@ export default function ControlPanel() {
 
         {/* Status */}
         <div className="text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-700">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-slate-100 dark:bg-slate-700">
             <div
               className={cn(
                 'w-2 h-2 rounded-full',
@@ -259,6 +280,94 @@ export default function ControlPanel() {
           </div>
         </div>
       </div>
+
+      {/* Export Settings Modal */}
+      <Dialog.Root open={exportSettingsOpen} onOpenChange={setExportSettingsOpen}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" />
+          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-slate-800 rounded-lg shadow-2xl p-6 w-full max-w-md z-50 border border-slate-200 dark:border-slate-600">
+            <div className="flex items-center justify-between mb-6">
+              <Dialog.Title className="text-lg font-semibold text-slate-800 dark:text-slate-200">
+                GIF Export Settings
+              </Dialog.Title>
+              <Dialog.Close asChild>
+                <button className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                  <X className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                </button>
+              </Dialog.Close>
+            </div>
+            
+            <div className="space-y-5">
+              <label className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300">
+                <input
+                  type="checkbox"
+                  checked={loop}
+                  onChange={(e) => { setLoop(e.target.checked); setExportOptions({ loop: e.target.checked }); }}
+                  className="accent-blue-600"
+                />
+                Loop GIF
+              </label>
+
+              <label className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300">
+                <input
+                  type="checkbox"
+                  checked={includeUI}
+                  onChange={(e) => { setIncludeUI(e.target.checked); setExportOptions({ includeUI: e.target.checked }); }}
+                  className="accent-blue-600"
+                />
+                {selectedAlgorithm?.category === 'graph' ? 'Include legend' : 'Include progress bar'}
+              </label>
+
+              <div className="space-y-3">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Frame delay: {delayMs}ms
+                </label>
+                <input
+                  type="range"
+                  min="40"
+                  max="800"
+                  step="20"
+                  value={delayMs}
+                  onChange={(e) => { const v = Number(e.target.value); setDelayMs(v); setExportOptions({ delayMs: v }); }}
+                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-600"
+                />
+                <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400">
+                  <span>Fast (40ms)</span>
+                  <span>Slow (800ms)</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-6 text-xs text-slate-500 dark:text-slate-400 text-center">
+              Settings only affect future exports, not the current run speed.
+            </div>
+
+            {/* Export Button - only show when a run has completed and frames exist */}
+            {!state.isRunning && selectedAlgorithm && state.steps.length > 0 && state.currentStep >= state.totalSteps - 1 && (
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  onClick={resetCapturedFrames}
+                  className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500 dark:text-slate-200 transition-colors rounded-md border border-slate-300 dark:border-slate-500"
+                >
+                  Clear Frames
+                </button>
+                <Dialog.Close asChild>
+                  <button className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500 dark:text-slate-200 transition-colors rounded-md border border-slate-300 dark:border-slate-500">
+                    Cancel
+                  </button>
+                </Dialog.Close>
+                <button
+                  onClick={handleExportGif}
+                  disabled={isExporting}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white transition-colors rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isExporting ? 'Exporting...' : 'Export to GIF'}
+                </button>
+              </div>
+            )}
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 }

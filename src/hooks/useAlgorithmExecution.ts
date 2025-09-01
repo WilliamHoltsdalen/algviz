@@ -7,7 +7,7 @@ import { bubblesortSteps } from '@/algorithms/sorting/bubblesort';
 import { mergesortSteps } from '@/algorithms/sorting/mergesort';
 import { dijkstraSteps } from '@/algorithms/graph/dijkstra';
 import { bfsSteps } from '@/algorithms/graph/bfs';
-import { useGifExport } from '@/hooks/useGifExport';
+import { useGifExport, getGlobalExportOptions } from '@/hooks/useGifExport';
 
 export function useAlgorithmExecution() {
   const { state, dispatch, selectedAlgorithm } = useAlgorithm();
@@ -21,7 +21,7 @@ export function useAlgorithmExecution() {
       dispatch({ type: 'SET_ORIGINAL_DATA', payload: [...state.data] });
     }
 
-    let steps;
+    let steps: any[] = [];
     switch (selectedAlgorithm.id) {
       case 'quicksort':
         steps = quicksortSteps(state.data);
@@ -70,6 +70,25 @@ export function useAlgorithmExecution() {
       }
       
       dispatch({ type: 'SET_CURRENT_STEP', payload: nextStep });
+      
+        // Capture frame immediately after the step is executed
+        const { includeUI } = getGlobalExportOptions();
+        const graphRoot = document.querySelector('[data-graph-root]') as HTMLElement | null;
+        const arrayRoot = document.querySelector('[data-array-root]') as HTMLElement | null;
+        const graphInner = document.querySelector('[data-graph-container]') as HTMLElement | null;
+        const arrayInner = document.querySelector('[data-array-container]') as HTMLElement | null;
+        const container = includeUI
+          ? (graphRoot || arrayRoot)
+          : (graphInner || arrayInner);
+      
+      if (container) {
+        // Give a brief time for DOM to update and animations to settle
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            captureFrame(container, container.offsetWidth, container.offsetHeight).catch(() => {});
+          }, 50); // Small delay to let animations settle
+        });
+      }
     } else {
       dispatch({ type: 'SET_RUNNING', payload: false });
       dispatch({ type: 'SET_PAUSED', payload: false });
@@ -79,21 +98,9 @@ export function useAlgorithmExecution() {
   // Auto-execute when running
   useEffect(() => {
     if (state.isRunning && !state.isPaused && state.steps.length > 0) {
-      const timer = setTimeout(() => {
-        executeStep();
-        // After advancing a step, capture the settled DOM in the background
-        const container = (document.querySelector('[data-graph-container]') as HTMLElement | null)
-          || (document.querySelector('[data-array-container]') as HTMLElement | null);
-        if (container) {
-          // Give a brief time for DOM to update and motion to settle
-          requestAnimationFrame(() => {
-            setTimeout(() => {
-              // Best-effort; ignore failures
-              captureFrame(container, container.offsetWidth, container.offsetHeight).catch(() => {});
-            }, 50);
-          });
-        }
-      }, state.speed);
+              const timer = setTimeout(() => {
+          executeStep();
+        }, state.speed);
 
       return () => clearTimeout(timer);
     }
@@ -110,6 +117,25 @@ export function useAlgorithmExecution() {
   useEffect(() => {
     generateSteps();
   }, [generateSteps]);
+
+  // Capture a final settled frame once the run completes
+  useEffect(() => {
+    if (!state.isRunning && state.steps.length > 0 && state.currentStep >= state.totalSteps - 1) {
+      const { includeUI } = getGlobalExportOptions();
+      const graphRoot = document.querySelector('[data-graph-root]') as HTMLElement | null;
+      const arrayRoot = document.querySelector('[data-array-root]') as HTMLElement | null;
+      const graphInner = document.querySelector('[data-graph-container]') as HTMLElement | null;
+      const arrayInner = document.querySelector('[data-array-container]') as HTMLElement | null;
+      const container = includeUI ? (graphRoot || arrayRoot) : (graphInner || arrayInner);
+      if (container) {
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            captureFrame(container, container.offsetWidth, container.offsetHeight).catch(() => {});
+          }, 80);
+        });
+      }
+    }
+  }, [state.isRunning, state.currentStep, state.totalSteps, state.steps.length, captureFrame]);
 
   return {
     generateSteps,

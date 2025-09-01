@@ -24,6 +24,9 @@ export default function VisualizationCanvas() {
     const currentStep = state.steps[state.currentStep];
     if (!currentStep) return '#3b82f6'; // blue-500
 
+    // Type guard to ensure this is an array algorithm step
+    if (!('indices' in currentStep)) return '#3b82f6';
+
     switch (currentStep.type) {
       case 'compare':
         if (currentStep.indices?.includes(index)) {
@@ -80,7 +83,7 @@ export default function VisualizationCanvas() {
       </div>
 
       {selectedAlgorithm ? (
-        <div className="space-y-4">
+        <div className="space-y-4" data-array-root>
           {/* Visualization Area */}
           <div data-array-container className="bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-xl p-8 min-h-[400px] flex items-end justify-center gap-2 relative overflow-hidden">
             {/* Grid lines for better visual reference */}
@@ -134,7 +137,7 @@ export default function VisualizationCanvas() {
                       {/* Shine effect */}
                       <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-white/30 to-transparent rounded-t-lg" />
                       {/* Active state glow */}
-                      {state.steps[state.currentStep]?.indices?.includes(index) && (
+                      {('indices' in state.steps[state.currentStep] && (state.steps[state.currentStep] as any).indices?.includes(index)) && (
                         <motion.div
                           className="absolute inset-0 rounded-t-lg"
                           style={{ boxShadow: `0 0 20px ${getBarColor(index, safeValue)}40` }}
@@ -178,7 +181,7 @@ export default function VisualizationCanvas() {
 
           {/* Step Information */}
           {state.steps.length > 0 && (
-            <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-4">
+            <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-4" data-progress-bar>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Step {Math.min(state.currentStep + 1, state.totalSteps)} of {state.totalSteps}
