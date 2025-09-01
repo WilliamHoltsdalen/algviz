@@ -51,7 +51,7 @@ export default function VisualizationCanvas() {
     return '#3b82f6'; // blue-500
   };
 
-  const maxValue = Math.max(...state.data);
+  const maxValue = state.data.length > 0 ? Math.max(...state.data) : 1;
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
@@ -93,76 +93,86 @@ export default function VisualizationCanvas() {
               ))}
             </div>
             
-            {state.data.map((value, index) => (
-              <motion.div
-                key={`${index}-${value}`}
-                className="relative flex flex-col items-center group"
-                style={{
-                  width: `${Math.max(12, (100 / state.data.length) * 1.2)}px`,
-                }}
-                initial={{ height: 0 }}
-                animate={{ height: `${(value / maxValue) * 280}px` }}
-                transition={{ duration: 0.3, delay: index * 0.01 }}
-              >
-                {/* Value label on top */}
-                <motion.div
-                  className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 bg-white/90 dark:bg-slate-800/90 px-1 py-0.5 rounded shadow-sm"
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.01 + 0.3 }}
+            {state.data.map((value, index) => {
+              // Ensure we have valid data, use 1 as fallback
+              const safeValue = (value === undefined || value === null || isNaN(value)) ? 1 : value;
+              if (value !== safeValue) {
+                console.warn(`Invalid value at index ${index}:`, value, 'using fallback:', safeValue);
+              }
+              // Compute dimensions once to avoid duplication and ensure consistent scaling
+              const targetHeight = 280; // px available for bar height (excludes labels)
+              const minBarHeight = 20; // px minimum so small values remain visible
+              const barHeight = Math.max(minBarHeight, (safeValue / maxValue) * targetHeight);
+              const barWidth = Math.max(12, (100 / state.data.length) * 1.2);
+              const baseDelay = index * 0.01; // stagger per bar
+              const barDuration = 0.3;
+
+              return (
+                <div
+                  key={`bar-${index}`}
+                  className="relative flex flex-col items-center group"
+                  style={{ width: `${barWidth}px` }}
                 >
-                  {value}
-                </motion.div>
-                
-                {/* Bar */}
-                <motion.div
-                  className="rounded-t-lg shadow-lg transition-all duration-300 hover:shadow-xl relative overflow-hidden"
-                  style={{
-                    width: `${Math.max(12, (100 / state.data.length) * 1.2)}px`,
-                    height: `${(value / maxValue) * 280}px`,
-                    backgroundColor: getBarColor(index, value),
-                  }}
-                  whileHover={{ scale: 1.05 }}
-                  initial={{ height: 0 }}
-                  animate={{ height: `${(value / maxValue) * 280}px` }}
-                  transition={{ duration: 0.3, delay: index * 0.01 }}
-                >
-                  {/* Gradient overlay for depth */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-t-lg" />
-                  
-                  {/* Shine effect */}
-                  <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-white/30 to-transparent rounded-t-lg" />
-                  
-                  {/* Active state glow */}
-                  {state.steps[state.currentStep]?.indices?.includes(index) && (
+                  {/* Fixed-height bar area so all bars share the same baseline */}
+                  <div className="relative w-full" style={{ height: `${targetHeight}px` }}>
+                    {/* Bar */}
                     <motion.div
-                      className="absolute inset-0 rounded-t-lg"
+                      layout
+                      className="absolute left-0 bottom-0 w-full rounded-t-lg shadow-lg transition-all duration-300 hover:shadow-xl overflow-hidden"
                       style={{
-                        boxShadow: `0 0 20px ${getBarColor(index, value)}40`,
+                        height: `${barHeight}px`,
+                        backgroundColor: getBarColor(index, safeValue),
                       }}
-                      animate={{ 
-                        boxShadow: [
-                          `0 0 20px ${getBarColor(index, value)}40`,
-                          `0 0 30px ${getBarColor(index, value)}60`,
-                          `0 0 20px ${getBarColor(index, value)}40`
-                        ]
-                      }}
-                      transition={{ duration: 1, repeat: Infinity }}
-                    />
-                  )}
-                </motion.div>
-                
-                {/* Index label at bottom */}
-                <motion.div
-                  className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-mono"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.01 + 0.3 }}
-                >
-                  {index}
-                </motion.div>
-              </motion.div>
-            ))}
+                      whileHover={{ scale: 1.05 }}
+                      initial={{ height: 0 }}
+                      animate={{ height: `${barHeight}px` }}
+                      transition={{ duration: barDuration, delay: baseDelay }}
+                    >
+                      {/* Gradient overlay for depth */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-t-lg" />
+                      {/* Shine effect */}
+                      <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-white/30 to-transparent rounded-t-lg" />
+                      {/* Active state glow */}
+                      {state.steps[state.currentStep]?.indices?.includes(index) && (
+                        <motion.div
+                          className="absolute inset-0 rounded-t-lg"
+                          style={{ boxShadow: `0 0 20px ${getBarColor(index, safeValue)}40` }}
+                          animate={{
+                            boxShadow: [
+                              `0 0 20px ${getBarColor(index, safeValue)}40`,
+                              `0 0 30px ${getBarColor(index, safeValue)}60`,
+                              `0 0 20px ${getBarColor(index, safeValue)}40`,
+                            ],
+                          }}
+                          transition={{ duration: 1, repeat: Infinity }}
+                        />
+                      )}
+                    </motion.div>
+
+                    {/* Value label positioned above bar top, not affecting baseline */}
+                    <motion.div
+                      layout
+                      className="absolute left-1/2 -translate-x-1/2 text-xs font-bold text-slate-700 dark:text-slate-300 bg-white/90 dark:bg-slate-800/90 px-1 py-0.5 rounded shadow-sm"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ bottom: barHeight + 6, opacity: 1, y: 0 }}
+                      transition={{ delay: baseDelay + barDuration, duration: 0.25, ease: 'easeOut' }}
+                    >
+                      {safeValue}
+                    </motion.div>
+                  </div>
+
+                  {/* Index label below bar area */}
+                  <motion.div
+                    className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-mono"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: baseDelay + barDuration, duration: 0.25 }}
+                  >
+                    {index}
+                  </motion.div>
+                </div>
+              );
+            })}
           </div>
 
           {/* Step Information */}
