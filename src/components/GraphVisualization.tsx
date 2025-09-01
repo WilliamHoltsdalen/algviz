@@ -4,19 +4,20 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAlgorithm } from '@/context/AlgorithmContext';
 import { Graph, GraphNode, GraphEdge } from '@/types/graph';
-import { generateSampleGraph, generateRandomGraph } from '@/utils/graphGenerator';
+import { generateRandomGraph } from '@/utils/graphGenerator';
 import { DijkstraStep } from '@/types/graph';
 import { BFSStep } from '@/algorithms/graph/bfs';
 
 export default function GraphVisualization() {
   const { state, dispatch, selectedAlgorithm } = useAlgorithm();
-  const [graph, setGraph] = useState<Graph>(generateSampleGraph());
-  const [graphSize, setGraphSize] = useState(7);
+  const [graph, setGraph] = useState<Graph>(generateRandomGraph(5));
+  const [graphSize, setGraphSize] = useState(5);
 
   // Generate new graph when algorithm changes
   useEffect(() => {
     if (selectedAlgorithm?.category === 'graph') {
-      const newGraph = graphSize <= 7 ? generateSampleGraph() : generateRandomGraph(graphSize);
+      // Always use generateRandomGraph with the selected size for consistent behavior
+      const newGraph = generateRandomGraph(graphSize);
       setGraph(newGraph);
       dispatch({ type: 'SET_GRAPH', payload: newGraph });
       dispatch({ type: 'SET_ORIGINAL_GRAPH', payload: newGraph });
@@ -216,7 +217,7 @@ export default function GraphVisualization() {
           </label>
           <input
             type="range"
-            min="5"
+            min="3"
             max="12"
             value={graphSize}
             onChange={(e) => setGraphSize(Number(e.target.value))}

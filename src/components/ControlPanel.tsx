@@ -31,7 +31,7 @@ export default function ControlPanel() {
       const step = state.steps[prevStep];
       
       // Update the data array if the step has array data
-      if (step?.array) {
+      if ('array' in step && step.array) {
         dispatch({ type: 'SET_DATA', payload: step.array });
       }
       
@@ -45,7 +45,7 @@ export default function ControlPanel() {
       const step = state.steps[nextStep];
       
       // Update the data array if the step has array data
-      if (step?.array) {
+      if ('array' in step && step.array) {
         dispatch({ type: 'SET_DATA', payload: step.array });
       }
       
@@ -102,7 +102,7 @@ export default function ControlPanel() {
               className="p-3 rounded-full bg-purple-500 hover:bg-purple-600 text-white transition-colors"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              title={selectedAlgorithm.category === 'graph' ? 'Generate New Graph' : 'Shuffle Array'}
+              title={selectedAlgorithm.category === 'graph' ? 'Generate New Random Graph' : 'Shuffle Array'}
             >
               <Shuffle className="w-5 h-5" />
             </motion.button>

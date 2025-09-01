@@ -63,7 +63,7 @@ export function useAlgorithmExecution() {
       const step = state.steps[nextStep];
       
       // Update the data array if the step has array data
-      if (step?.array) {
+      if ('array' in step && step.array) {
         dispatch({ type: 'SET_DATA', payload: step.array });
       }
       
