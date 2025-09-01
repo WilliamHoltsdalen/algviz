@@ -12,6 +12,7 @@ export function mergesortSteps(arr: number[]): AlgorithmStep[] {
         type: 'highlight',
         indices: Array.from({ length: right - left + 1 }, (_, i) => left + i),
         message: `Dividing array from index ${left} to ${right}`,
+        array: [...array],
       });
 
       mergeSort(left, mid);
@@ -28,6 +29,7 @@ export function mergesortSteps(arr: number[]): AlgorithmStep[] {
       type: 'highlight',
       indices: Array.from({ length: right - left + 1 }, (_, i) => left + i),
       message: `Merging subarrays from ${left} to ${right}`,
+      array: [...array],
     });
 
     let i = 0, j = 0, k = left;
@@ -87,6 +89,7 @@ export function mergesortSteps(arr: number[]): AlgorithmStep[] {
     type: 'highlight',
     indices: [],
     message: 'Starting Merge Sort algorithm',
+    array: [...array],
   });
 
   mergeSort(0, array.length - 1);
@@ -95,6 +98,7 @@ export function mergesortSteps(arr: number[]): AlgorithmStep[] {
     type: 'complete',
     indices: [],
     message: 'Merge Sort completed!',
+    array: [...array],
   });
 
   return steps;

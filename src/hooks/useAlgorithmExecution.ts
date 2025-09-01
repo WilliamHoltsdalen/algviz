@@ -32,12 +32,20 @@ export function useAlgorithmExecution() {
 
   const executeStep = useCallback(() => {
     if (state.currentStep < state.totalSteps - 1) {
-      dispatch({ type: 'NEXT_STEP' });
+      const nextStep = state.currentStep + 1;
+      const step = state.steps[nextStep];
+      
+      // Update the data array if the step has array data
+      if (step?.array) {
+        dispatch({ type: 'SET_DATA', payload: step.array });
+      }
+      
+      dispatch({ type: 'SET_CURRENT_STEP', payload: nextStep });
     } else {
       dispatch({ type: 'SET_RUNNING', payload: false });
       dispatch({ type: 'SET_PAUSED', payload: false });
     }
-  }, [state.currentStep, state.totalSteps, dispatch]);
+  }, [state.currentStep, state.totalSteps, state.steps, dispatch]);
 
   // Auto-execute when running
   useEffect(() => {

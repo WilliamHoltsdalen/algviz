@@ -16,6 +16,7 @@ export interface AlgorithmStep {
   values?: number[];
   message?: string;
   data?: any;
+  array?: number[]; // Current state of the array after this step
 }
 
 export interface VisualizationState {

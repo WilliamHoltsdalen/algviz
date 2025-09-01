@@ -20,6 +20,7 @@ export function quicksortSteps(arr: number[]): AlgorithmStep[] {
       type: 'highlight',
       indices: [high],
       message: `Pivot selected: ${pivot}`,
+      array: [...array],
     });
 
     for (let j = low; j < high; j++) {
@@ -27,6 +28,7 @@ export function quicksortSteps(arr: number[]): AlgorithmStep[] {
         type: 'compare',
         indices: [j, high],
         message: `Comparing ${array[j]} with pivot ${pivot}`,
+        array: [...array],
       });
 
       if (array[j] <= pivot) {
@@ -38,6 +40,7 @@ export function quicksortSteps(arr: number[]): AlgorithmStep[] {
             type: 'swap',
             indices: [i, j],
             message: `Swapping ${array[j]} and ${array[i]}`,
+            array: [...array],
           });
         }
       }
@@ -49,6 +52,7 @@ export function quicksortSteps(arr: number[]): AlgorithmStep[] {
       type: 'swap',
       indices: [i + 1, high],
       message: `Placing pivot ${pivot} in correct position`,
+      array: [...array],
     });
 
     return i + 1;
@@ -58,6 +62,7 @@ export function quicksortSteps(arr: number[]): AlgorithmStep[] {
     type: 'highlight',
     indices: [],
     message: 'Starting Quicksort algorithm',
+    array: [...array],
   });
 
   quickSort(0, array.length - 1);
@@ -66,6 +71,7 @@ export function quicksortSteps(arr: number[]): AlgorithmStep[] {
     type: 'complete',
     indices: [],
     message: 'Quicksort completed!',
+    array: [...array],
   });
 
   return steps;

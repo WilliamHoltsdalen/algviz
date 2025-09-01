@@ -9,6 +9,7 @@ export function bubblesortSteps(arr: number[]): AlgorithmStep[] {
     type: 'highlight',
     indices: [],
     message: 'Starting Bubble Sort algorithm',
+    array: [...array],
   });
 
   for (let i = 0; i < n - 1; i++) {
@@ -18,6 +19,7 @@ export function bubblesortSteps(arr: number[]): AlgorithmStep[] {
       type: 'highlight',
       indices: [],
       message: `Pass ${i + 1}: Comparing adjacent elements`,
+      array: [...array],
     });
 
     for (let j = 0; j < n - i - 1; j++) {
@@ -25,6 +27,7 @@ export function bubblesortSteps(arr: number[]): AlgorithmStep[] {
         type: 'compare',
         indices: [j, j + 1],
         message: `Comparing ${array[j]} and ${array[j + 1]}`,
+        array: [...array],
       });
 
       if (array[j] > array[j + 1]) {
@@ -36,6 +39,7 @@ export function bubblesortSteps(arr: number[]): AlgorithmStep[] {
           type: 'swap',
           indices: [j, j + 1],
           message: `Swapping ${array[j + 1]} and ${array[j]}`,
+          array: [...array],
         });
       }
     }
@@ -46,6 +50,7 @@ export function bubblesortSteps(arr: number[]): AlgorithmStep[] {
         type: 'highlight',
         indices: [],
         message: 'No swaps in this pass - array is sorted!',
+        array: [...array],
       });
       break;
     }
@@ -55,6 +60,7 @@ export function bubblesortSteps(arr: number[]): AlgorithmStep[] {
     type: 'complete',
     indices: [],
     message: 'Bubble Sort completed!',
+    array: [...array],
   });
 
   return steps;

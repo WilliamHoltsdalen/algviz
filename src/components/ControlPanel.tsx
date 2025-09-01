@@ -24,11 +24,31 @@ export default function ControlPanel() {
   };
 
   const handleStepBack = () => {
-    dispatch({ type: 'PREV_STEP' });
+    if (state.currentStep > 0) {
+      const prevStep = state.currentStep - 1;
+      const step = state.steps[prevStep];
+      
+      // Update the data array if the step has array data
+      if (step?.array) {
+        dispatch({ type: 'SET_DATA', payload: step.array });
+      }
+      
+      dispatch({ type: 'SET_CURRENT_STEP', payload: prevStep });
+    }
   };
 
   const handleStepForward = () => {
-    dispatch({ type: 'NEXT_STEP' });
+    if (state.currentStep < state.totalSteps - 1) {
+      const nextStep = state.currentStep + 1;
+      const step = state.steps[nextStep];
+      
+      // Update the data array if the step has array data
+      if (step?.array) {
+        dispatch({ type: 'SET_DATA', payload: step.array });
+      }
+      
+      dispatch({ type: 'SET_CURRENT_STEP', payload: nextStep });
+    }
   };
 
   const handleSpeedChange = (speed: number) => {
