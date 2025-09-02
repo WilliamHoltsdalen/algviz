@@ -335,6 +335,7 @@ export default function GraphVisualization() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.4 }}
+                    fill="#ffffff"
                   >
                     {node.label}
                   </motion.text>
@@ -345,10 +346,12 @@ export default function GraphVisualization() {
                       y={node.y + 35}
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      className="text-xs font-bold fill-slate-600 dark:fill-slate-400"
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.6 }}
+                      fill="#94a3b8" // Tailwind slate-400 for dark theme
+                      fontSize="12"
+                      fontWeight={700}
                     >
                       d: {getNodeDistance(node.id)}
                     </motion.text>

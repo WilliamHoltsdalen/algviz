@@ -50,7 +50,7 @@ export function useGifExport() {
 
   const captureFrame = useCallback(async (element: HTMLElement, width?: number, height?: number) => {
     // Use pixelRatio=2 for sharper output
-    const dataUrl = await htmlToImage.toPng(element, {
+    const rawDataUrl = await htmlToImage.toPng(element, {
       cacheBust: true,
       pixelRatio: 2,
       width: width ?? element.offsetWidth,
@@ -59,8 +59,28 @@ export function useGifExport() {
         transform: 'none', // avoid scaled capture issues
       },
     });
-    framesStore.push(dataUrl);
-    return dataUrl;
+    // Ensure frame is fully opaque to avoid ghosting from alpha blending during quantization
+    const img = new Image();
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve();
+      img.onerror = () => reject(new Error('Failed to load frame image'));
+      img.src = rawDataUrl;
+    });
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const w = width ?? element.offsetWidth;
+    const h = height ?? element.offsetHeight;
+    canvas.width = w * 2; // match pixelRatio used above
+    canvas.height = h * 2;
+    if (ctx) {
+      // Paint an opaque background and then draw the frame
+      ctx.fillStyle = '#0b1220'; // matches dark theme panel background to reduce contouring
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    }
+    const opaqueDataUrl = canvas.toDataURL('image/png');
+    framesStore.push(opaqueDataUrl);
+    return opaqueDataUrl;
   }, []);
 
   const captureAnimationFrames = useCallback(
@@ -135,6 +155,10 @@ export function useGifExport() {
           (gifOptions as any).repeat = loop ? 0 : -1; // gif.js: 0 = forever, -1 = no repeat
           (gifOptions as any).numLoops = loop ? 0 : 1; // alternative field in some builds
           (gifOptions as any).loop = loop; // boolean flag some wrappers read
+          // Configure worker path (use our bundled one) and disposal method to prevent frame blending
+          (gifOptions as any).workerScript = '/gif.worker.js';
+          // disposal: 2 => restore to background, avoids ghosting from previous frames
+          (gifOptions as any).disposal = 2;
 
           (gifshot as any).createGIF(gifOptions as any, (obj: any) => {
             if (!obj || obj.error) {
