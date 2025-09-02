@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 export default function BottomCTA() {
   return (
     <section className="relative">
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+      <div aria-hidden className="pointer-events-none absolute inset-0 z-10">
         <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 mx-auto h-[28rem] w-[80%] rounded-[4rem] bg-gradient-to-r from-indigo-500/15 via-fuchsia-500/15 to-amber-400/15 blur-3xl" />
       </div>
 
