@@ -102,7 +102,8 @@ export default function LiveSortingPreview() {
   }
 
   return (
-    <div className="relative bg-white/5 border border-white/10 rounded-2xl p-6 overflow-hidden">
+    <div className="relative bg-background rounded-2xl">
+    <div className="relative bg-white/3 border border-white/10 rounded-2xl p-6 overflow-hidden">
       {/* subtle grid */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <svg width="100%" height="100%">
@@ -177,6 +178,7 @@ export default function LiveSortingPreview() {
           );
         })}
       </div>
+    </div>
     </div>
   );
 }
