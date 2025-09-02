@@ -1,7 +1,8 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Download, Film, Layers3, MousePointerClick, PlayCircle } from 'lucide-react';
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Download, Film, Layers3, MousePointerClick, PlayCircle, Settings } from 'lucide-react';
 import { BentoGrid, BentoGridItem } from '@/components/ui/bento-grid';
 import { cn } from '@/lib/utils';
 
@@ -56,54 +57,96 @@ const AlgorithmsHeader = () => (
   </div>
 );
 
-const ControlsHeader = () => (
-  <div className="flex h-full w-full items-center justify-center">
-    <div className="w-full max-w-48">
-      <div className="flex items-center gap-2 mb-3">
-        <motion.button
-          type="button"
-          className="rounded-md border border-white/15 bg-white/5 p-2 text-slate-200 hover:bg-white/10"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          aria-label="Play animation"
+const ControlsHeader = () => {
+  const [currentStep, setCurrentStep] = React.useState(47);
+  const totalSteps = 89;
+
+  return (
+    <div className="flex h-full w-full items-center justify-center">
+      <div className="w-full max-w-48">
+        <div className="flex items-center gap-2 mb-3">
+          <motion.button
+            type="button"
+            className="rounded-md border border-white/15 bg-white/5 p-2 text-slate-200 hover:bg-white/10"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            aria-label="Play animation"
+          >
+            <PlayCircle className="h-4 w-4" aria-hidden />
+          </motion.button>
+          <div className="flex-1 h-2 rounded-full bg-white/10 overflow-hidden">
+            <motion.div 
+              className="h-full bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"
+              animate={{ width: ['0%', '100%', '0%'] }}
+              transition={{ duration: 2.5, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+              onUpdate={(latest) => {
+                // Calculate step based on progress (0-100%)
+                const progress = typeof latest.width === 'string' 
+                  ? parseFloat(latest.width.replace('%', '')) 
+                  : 0;
+                const step = Math.round((progress / 100) * totalSteps);
+                setCurrentStep(step);
+              }}
+            />
+          </div>
+        </div>
+        <motion.div 
+          className="text-xs text-slate-300 text-center"
+          key={currentStep}
+          initial={{ opacity: 0.7 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2 }}
         >
-          <PlayCircle className="h-4 w-4" aria-hidden />
-        </motion.button>
-        <div className="flex-1 h-2 rounded-full bg-white/10 overflow-hidden">
-          <motion.div 
-            className="h-full bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"
-            animate={{ width: ['0%', '100%', '0%'] }}
-            transition={{ duration: 2.5, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
-          />
+          Step {currentStep} of {totalSteps}
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+const PresetsHeader = () => {
+  const [currentPreset, setCurrentPreset] = React.useState(0);
+  const presets = [
+    { name: 'Star (weighted)', desc: 'One hub connected to all leaves' },
+    { name: 'Line (chain)', desc: 'Simple path from start to end' },
+    { name: 'Dense (weighted)', desc: 'More edges; good for Dijkstra' },
+    { name: 'Small grid-ish', desc: 'Compact with cross connections' },
+  ];
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentPreset((prev) => (prev + 1) % presets.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [presets.length]);
+
+  return (
+    <div className="flex h-full w-full items-center justify-center">
+      <div className="w-full max-w-48">
+        <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+          <div className="flex items-center gap-2 mb-3">
+            <Settings className="h-3 w-3 text-slate-400" aria-hidden />
+            <span className="text-xs text-slate-300 font-medium">Graph presets</span>
+          </div>
+          
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentPreset}
+              className="rounded-md p-2 text-xs bg-white/10 border border-white/20"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="font-medium text-slate-200">{presets[currentPreset].name}</div>
+              <div className="text-slate-400 text-[10px]">{presets[currentPreset].desc}</div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
-      <div className="text-xs text-slate-300 text-center">Step 47 of 89</div>
     </div>
-  </div>
-);
-
-const InspectHeader = () => (
-  <div className="flex h-full w-full items-center justify-center relative">
-    <motion.div 
-      className="absolute rounded-lg border border-white/20 bg-white/10 backdrop-blur-sm p-3 text-xs text-slate-200"
-      animate={{ y: [-5, 5, -5] }}
-      transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
-    >
-      <div className="font-medium">Array[3]</div>
-      <div className="text-slate-300">Value: 42</div>
-      <div className="text-slate-300">Swaps: 3</div>
-    </motion.div>
-    <motion.div
-      className="absolute w-2 h-2 bg-blue-400 rounded-full"
-      animate={{ 
-        x: [-20, 20, -20],
-        y: [-10, 10, -10]
-      }}
-      transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
-      aria-hidden
-    />
-  </div>
-);
+  );
+};
 
 const features = [
   {
@@ -126,10 +169,10 @@ const features = [
     icon: <PlayCircle className="h-4 w-4 text-slate-400" aria-hidden />,
   },
   {
-    title: 'Interactive Inspection',
-    description: 'Click any element to reveal its current state, comparison count, or position in the algorithm flow.',
-    header: <InspectHeader />,
-    icon: <MousePointerClick className="h-4 w-4 text-slate-400" aria-hidden />,
+    title: 'Smart Presets',
+    description: 'Jump-start your visualizations with curated data sets. From nearly-sorted arrays to complex graph topologies.',
+    header: <PresetsHeader />,
+    icon: <Settings className="h-4 w-4 text-slate-400" aria-hidden />,
     className: 'md:col-span-2',
   },
 ];
