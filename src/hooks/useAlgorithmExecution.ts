@@ -14,7 +14,10 @@ export function useAlgorithmExecution() {
   const { captureFrame, reset: resetFrames } = useGifExport();
 
   const generateSteps = useCallback(() => {
-    if (!selectedAlgorithm || !state.data.length) return;
+    if (!selectedAlgorithm) return;
+    // For sorting algorithms we require an array; for graph algorithms we don't
+    const isGraphAlgo = selectedAlgorithm.category === 'graph';
+    if (!isGraphAlgo && !state.data.length) return;
 
     // Store the original data if not already stored
     if (state.originalData.length === 0) {
