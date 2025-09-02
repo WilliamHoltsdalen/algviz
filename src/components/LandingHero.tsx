@@ -5,7 +5,7 @@ import LiveSortingPreview from './LiveSortingPreview';
 import { BackgroundGradient } from './ui/background-gradient';
 import { HoverBorderGradient } from './ui/hover-border-gradient';
 import Link from 'next/link';
-import { Github } from 'lucide-react';
+import { Github, Star } from 'lucide-react';
 
 export default function LandingHero() {
   return (
@@ -59,14 +59,14 @@ export default function LandingHero() {
                 </motion.div>
               </Link>
               <Link 
-                href="https://github.com/" 
+                href="https://github.com/WilliamHoltsdalen/algviz" 
                 target="_blank" 
                 rel="noopener" 
-                className="inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold text-slate-200 border border-white/15 bg-white/5 hover:bg-white/10 transition-colors"
-                aria-label="View on GitHub"
+                className="group inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold text-slate-200 border border-white/15 bg-white/5 hover:bg-white/10 transition-colors"
+                aria-label="Star on GitHub"
               >
-                <Github className="h-4 w-4 mr-2" aria-hidden />
-                View on GitHub
+                <Star className="h-4 w-4 mr-2 transition-colors group-hover:text-yellow-400" aria-hidden />
+                Star on GitHub
               </Link>
             </motion.div>
           </div>
