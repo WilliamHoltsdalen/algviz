@@ -22,7 +22,7 @@ export default function LandingHero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
             >
-              Step. See. Solve.
+              Algorithms Visualized
             </motion.h1>
             <motion.p
               className="mt-6 text-lg md:text-xl text-slate-300 max-w-xl"
@@ -30,7 +30,7 @@ export default function LandingHero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.5 }}
             >
-              Visualize algorithms with elegant, step‑by‑step animations. Built for clarity, not flash.
+              Step‑by‑step animations that bring algorithms to life. Watch algorithms work their magic.
             </motion.p>
 
             <motion.div
@@ -79,7 +79,7 @@ export default function LandingHero() {
             className="relative"
           >
             <BackgroundGradient containerClassName="rounded-3xl" animate>
-              <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-4 backdrop-blur-sm">
+              <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-3 backdrop-blur-sm">
                 <LiveSortingPreview />
               </div>
             </BackgroundGradient>

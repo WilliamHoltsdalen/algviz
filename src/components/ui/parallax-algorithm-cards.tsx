@@ -65,46 +65,76 @@ export const ParallaxAlgorithmCards = ({
     </motion.div>
   );
 
+  // Mobile version: show first 4 algorithms + "and more" card
+  const mobileAlgorithms = algorithms.slice(0, 4);
+  const remainingCount = algorithms.length - 4;
+
   return (
     <div
       className={cn("w-full items-start relative overflow-hidden", className)}
       ref={gridRef}
     >
-      <div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start max-w-5xl mx-auto gap-10 py-24 px-6 md:py-32 md:px-10"
-      >
-        <div className="grid gap-10">
-          {firstPart.map((algorithm, idx) => (
-            <motion.div
-              style={{ y: translateFirst }}
-              key={"grid-1" + idx}
-            >
-              <AlgorithmCard algorithm={algorithm} index={idx} />
-            </motion.div>
+      {/* Mobile layout - simple grid */}
+      <div className="block md:hidden">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto py-12 px-6">
+          {mobileAlgorithms.map((algorithm, idx) => (
+            <AlgorithmCard algorithm={algorithm} index={idx} key={algorithm.id} />
           ))}
-        </div>
-        <div className="grid gap-10">
-          {secondPart.map((algorithm, idx) => (
-            <motion.div 
-              style={{ y: translateSecond }} 
-              key={"grid-2" + idx}
-            >
-              <AlgorithmCard algorithm={algorithm} index={idx + third} />
-            </motion.div>
-          ))}
-        </div>
-        <div className="grid gap-10">
-          {thirdPart.map((algorithm, idx) => (
-            <motion.div 
-              style={{ y: translateThird }} 
-              key={"grid-3" + idx}
-            >
-              <AlgorithmCard algorithm={algorithm} index={idx + 2 * third} />
-            </motion.div>
-          ))}
+          {/* "And more" card */}
+          <motion.div
+            className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm flex items-center justify-center min-h-[200px]"
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ delay: 0.16, duration: 0.45 }}
+          >
+            <div className="text-center">
+              <div className="text-2xl font-bold text-slate-100 mb-2">+{remainingCount}</div>
+              <div className="text-sm text-slate-300">More algorithms</div>
+              <div className="text-xs text-slate-400 mt-1">coming soon</div>
+            </div>
+          </motion.div>
         </div>
       </div>
-      <div aria-hidden className="pointer-events-none absolute bottom-0 left-0 right-0 h-140 bg-gradient-to-b from-transparent to-[#0b1320]" />
+
+      {/* Desktop layout - parallax effect */}
+      <div className="hidden md:block">
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start max-w-5xl mx-auto gap-10 py-24 px-6 md:py-32 md:px-10"
+        >
+          <div className="grid gap-10">
+            {firstPart.map((algorithm, idx) => (
+              <motion.div
+                style={{ y: translateFirst }}
+                key={"grid-1" + idx}
+              >
+                <AlgorithmCard algorithm={algorithm} index={idx} />
+              </motion.div>
+            ))}
+          </div>
+          <div className="grid gap-10">
+            {secondPart.map((algorithm, idx) => (
+              <motion.div 
+                style={{ y: translateSecond }} 
+                key={"grid-2" + idx}
+              >
+                <AlgorithmCard algorithm={algorithm} index={idx + third} />
+              </motion.div>
+            ))}
+          </div>
+          <div className="grid gap-10">
+            {thirdPart.map((algorithm, idx) => (
+              <motion.div 
+                style={{ y: translateThird }} 
+                key={"grid-3" + idx}
+              >
+                <AlgorithmCard algorithm={algorithm} index={idx + 2 * third} />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+        <div aria-hidden className="pointer-events-none absolute bottom-0 left-0 right-0 h-140 bg-gradient-to-b from-transparent to-[#0b1320]" />
+      </div>
     </div>
   );
 };
