@@ -12,7 +12,7 @@ export const ParallaxAlgorithmCards = ({
   algorithms: Algorithm[];
   className?: string;
 }) => {
-  const gridRef = useRef<any>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: gridRef,
     // Start animating when the section is well in view, finish before it leaves

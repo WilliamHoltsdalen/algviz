@@ -16,7 +16,7 @@ type TimelineScrubberProps = {
 export default function TimelineScrubber({
   currentStep,
   totalSteps,
-  isRunning: _isRunning,
+  isRunning: _,
   onStepChange,
   onTogglePlay,
 }: TimelineScrubberProps) {

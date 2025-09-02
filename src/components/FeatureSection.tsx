@@ -42,7 +42,7 @@ const GifExportHeader = () => {
 
   // Self-running loop with a simulated cursor moving via center
   React.useEffect(() => {
-    let timeouts: number[] = [];
+    const timeouts: number[] = [];
     const durationMs = 2200;
     const exportStartDelayMs = 900;
 
@@ -222,7 +222,7 @@ const ControlsHeader = () => {
   const [isPlaying, setIsPlaying] = React.useState(false);
 
   React.useEffect(() => {
-    let timeouts: number[] = [];
+    const timeouts: number[] = [];
 
     const cycle = () => {
       setIsPlaying(false);
@@ -401,7 +401,7 @@ export default function FeatureSection() {
           transition={{ delay: 0.1, duration: 0.6 }}
         >
           <BentoGrid className="max-w-4xl mx-auto">
-            {features.map((item, i) => (
+            {features.map((item) => (
               <BentoGridItem
                 key={item.title}
                 title={item.title}

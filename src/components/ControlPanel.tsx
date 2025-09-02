@@ -30,41 +30,6 @@ export default function ControlPanel() {
     }
   };
 
-  const handleStepChange = (step: number) => {
-    if (step >= 0 && step < state.totalSteps) {
-      // Recompute the visualization state by applying the step's snapshot if present,
-      // otherwise derive the array state by replaying from the beginning to target step.
-      const target = state.steps[step] as unknown;
-
-      if (
-        typeof target === 'object' &&
-        target !== null &&
-        'array' in (target as Record<string, unknown>) &&
-        Array.isArray((target as { array?: unknown }).array)
-      ) {
-        dispatch({ type: 'SET_DATA', payload: (target as { array: number[] }).array });
-        dispatch({ type: 'SET_CURRENT_STEP', payload: step });
-        return;
-      }
-
-      // Sorting algorithms should have array snapshots on every mutation/highlight.
-      // As a fallback, derive state from the closest previous snapshot.
-      for (let i = step; i >= 0; i--) {
-        const s = state.steps[i] as unknown;
-        if (
-          typeof s === 'object' &&
-          s !== null &&
-          'array' in (s as Record<string, unknown>) &&
-          Array.isArray((s as { array?: unknown }).array)
-        ) {
-          dispatch({ type: 'SET_DATA', payload: (s as { array: number[] }).array });
-          break;
-        }
-      }
-      dispatch({ type: 'SET_CURRENT_STEP', payload: step });
-    }
-  };
-
   const handleReset = () => {
     resetCapturedFrames();
     dispatch({ type: 'RESET' });
