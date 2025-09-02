@@ -39,6 +39,7 @@ export function mergesortSteps(arr: number[]): AlgorithmStep[] {
         type: 'compare',
         indices: [left + i, mid + 1 + j],
         message: `Comparing ${leftArray[i]} and ${rightArray[j]}`,
+        array: [...array],
       });
 
       if (leftArray[i] <= rightArray[j]) {
@@ -47,6 +48,7 @@ export function mergesortSteps(arr: number[]): AlgorithmStep[] {
           type: 'move',
           indices: [k],
           message: `Placing ${leftArray[i]} at position ${k}`,
+          array: [...array],
         });
         i++;
       } else {
@@ -55,6 +57,7 @@ export function mergesortSteps(arr: number[]): AlgorithmStep[] {
           type: 'move',
           indices: [k],
           message: `Placing ${rightArray[j]} at position ${k}`,
+          array: [...array],
         });
         j++;
       }
@@ -68,6 +71,7 @@ export function mergesortSteps(arr: number[]): AlgorithmStep[] {
         type: 'move',
         indices: [k],
         message: `Placing remaining element ${leftArray[i]} at position ${k}`,
+        array: [...array],
       });
       i++;
       k++;
@@ -79,6 +83,7 @@ export function mergesortSteps(arr: number[]): AlgorithmStep[] {
         type: 'move',
         indices: [k],
         message: `Placing remaining element ${rightArray[j]} at position ${k}`,
+        array: [...array],
       });
       j++;
       k++;

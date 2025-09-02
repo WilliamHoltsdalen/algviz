@@ -11,6 +11,7 @@ import { generateRandomArray } from '@/lib/utils';
 import { generateRandomGraph } from '@/utils/graphGenerator';
 import { Play, Pause, RotateCcw, SkipBack, SkipForward, Gauge, Shuffle, Download, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import TimelineScrubber from './TimelineScrubber';
 
 export default function ControlPanel() {
   const { state, dispatch, selectedAlgorithm } = useAlgorithm();
@@ -27,6 +28,31 @@ export default function ControlPanel() {
     } else {
       generateSteps();
       dispatch({ type: 'SET_RUNNING', payload: true });
+    }
+  };
+
+  const handleStepChange = (step: number) => {
+    if (step >= 0 && step < state.totalSteps) {
+      // Recompute the visualization state by applying the step's snapshot if present,
+      // otherwise derive the array state by replaying from the beginning to target step.
+      const target = state.steps[step] as any;
+
+      if ('array' in target && target.array) {
+        dispatch({ type: 'SET_DATA', payload: target.array });
+        dispatch({ type: 'SET_CURRENT_STEP', payload: step });
+        return;
+      }
+
+      // Sorting algorithms should have array snapshots on every mutation/highlight.
+      // As a fallback, derive state from the closest previous snapshot.
+      for (let i = step; i >= 0; i--) {
+        const s = state.steps[i] as any;
+        if ('array' in s && s.array) {
+          dispatch({ type: 'SET_DATA', payload: s.array });
+          break;
+        }
+      }
+      dispatch({ type: 'SET_CURRENT_STEP', payload: step });
     }
   };
 
@@ -251,6 +277,19 @@ export default function ControlPanel() {
             <RotateCcw className="w-5 h-5" />
           </motion.button>
         </div>
+
+        {/* Timeline Scrubber */}
+        {state.steps.length > 1 && (
+          <div className="px-4">
+            <TimelineScrubber
+              currentStep={state.currentStep}
+              totalSteps={state.totalSteps}
+              isRunning={state.isRunning}
+              onStepChange={handleStepChange}
+              onTogglePlay={handlePlay}
+            />
+          </div>
+        )}
 
         {/* Speed Control */}
         <div className="flex items-center justify-center gap-4">
