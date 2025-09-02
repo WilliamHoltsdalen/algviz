@@ -126,9 +126,9 @@ export default function ControlPanel() {
   ];
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
+    <div className="theme-panel p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200">
+        <h2 className="text-xl font-semibold text-slate-200">
           Controls
         </h2>
         <div className="flex items-center gap-2">
@@ -136,7 +136,7 @@ export default function ControlPanel() {
           {!state.isRunning && selectedAlgorithm && state.steps.length > 0 && state.currentStep >= state.totalSteps - 1 && (
             <motion.button
               onClick={() => setExportSettingsOpen(true)}
-              className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500 dark:text-slate-200 transition-colors rounded-md border border-slate-300 dark:border-slate-500"
+              className="px-4 py-2 bg-white/5 hover:bg-white/10 text-slate-200 transition-colors rounded-md border border-white/10"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               title="Export Animation to GIF"
@@ -155,7 +155,7 @@ export default function ControlPanel() {
           {!state.isRunning && selectedAlgorithm && (
             <motion.button
               onClick={handleShuffle}
-              className="p-3 rounded-full bg-purple-500 hover:bg-purple-600 text-white transition-colors"
+              className="p-3 rounded-full bg-blue-600/20 hover:bg-blue-600/30 text-blue-200 transition-colors border border-blue-600/40"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               title={selectedAlgorithm.category === 'graph' ? 'Generate New Random Graph' : 'Shuffle Array'}
@@ -170,8 +170,8 @@ export default function ControlPanel() {
             className={cn(
               'p-3 rounded-full transition-colors',
               state.currentStep === 0
-                ? 'bg-slate-100 text-slate-400 cursor-not-allowed dark:bg-slate-700'
-                : 'bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500 dark:text-slate-200'
+                ? 'bg-white/5 text-slate-500 cursor-not-allowed'
+                : 'bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10'
             )}
             whileHover={state.currentStep > 0 ? { scale: 1.05 } : {}}
             whileTap={state.currentStep > 0 ? { scale: 0.95 } : {}}
@@ -185,10 +185,10 @@ export default function ControlPanel() {
             className={cn(
               'p-4 rounded-full transition-colors',
               !selectedAlgorithm || state.steps.length === 0
-                ? 'bg-slate-100 text-slate-400 cursor-not-allowed dark:bg-slate-700'
+                ? 'bg-white/5 text-slate-500 cursor-not-allowed'
                 : state.isRunning && !state.isPaused
-                ? 'bg-red-500 hover:bg-red-600 text-white'
-                : 'bg-green-500 hover:bg-green-600 text-white'
+                ? 'bg-red-600 hover:bg-red-500 text-white'
+                : 'bg-blue-600 hover:bg-blue-500 text-white'
             )}
             whileHover={
               selectedAlgorithm && state.steps.length > 0 ? { scale: 1.05 } : {}
@@ -210,8 +210,8 @@ export default function ControlPanel() {
             className={cn(
               'p-3 rounded-full transition-colors',
               state.currentStep >= state.totalSteps - 1
-                ? 'bg-slate-100 text-slate-400 cursor-not-allowed dark:bg-slate-700'
-                : 'bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500 dark:text-slate-200'
+                ? 'bg-white/5 text-slate-500 cursor-not-allowed'
+                : 'bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10'
             )}
             whileHover={state.currentStep < state.totalSteps - 1 ? { scale: 1.05 } : {}}
             whileTap={state.currentStep < state.totalSteps - 1 ? { scale: 0.95 } : {}}
@@ -225,8 +225,8 @@ export default function ControlPanel() {
             className={cn(
               'p-3 rounded-full transition-colors',
               !selectedAlgorithm
-                ? 'bg-slate-100 text-slate-400 cursor-not-allowed dark:bg-slate-700'
-                : 'bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500 dark:text-slate-200'
+                ? 'bg-white/5 text-slate-500 cursor-not-allowed'
+                : 'bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10'
             )}
             whileHover={selectedAlgorithm ? { scale: 1.05 } : {}}
             whileTap={selectedAlgorithm ? { scale: 0.95 } : {}}
@@ -237,18 +237,18 @@ export default function ControlPanel() {
 
         {/* Speed Control */}
         <div className="flex items-center justify-center gap-4">
-          <Gauge className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-          <span className="text-sm text-slate-600 dark:text-slate-400">Speed:</span>
+          <Gauge className="w-5 h-5 text-slate-400" />
+          <span className="text-sm text-slate-400">Speed:</span>
           <div className="flex gap-2">
             {speedOptions.map((option) => (
               <button
                 key={option.value}
                 onClick={() => handleSpeedChange(option.value)}
                 className={cn(
-                  'px-3 py-1 rounded-md text-sm font-medium transition-colors',
+                  'px-3 py-1 rounded-md text-sm font-medium transition-colors border',
                   state.speed === option.value
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-600 dark:text-slate-300 dark:hover:bg-slate-500'
+                    ? 'bg-blue-600/20 text-blue-200 border-blue-600/40'
+                    : 'bg-transparent text-slate-300 hover:bg-white/5 border-white/10'
                 )}
               >
                 {option.label}
@@ -259,7 +259,7 @@ export default function ControlPanel() {
 
         {/* Status */}
         <div className="text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-slate-100 dark:bg-slate-700">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-white/5 border border-white/10">
             <div
               className={cn(
                 'w-2 h-2 rounded-full',
@@ -270,7 +270,7 @@ export default function ControlPanel() {
                   : 'bg-slate-400'
               )}
             />
-            <span className="text-sm text-slate-600 dark:text-slate-400">
+            <span className="text-sm text-slate-400">
               {state.isRunning && !state.isPaused
                 ? 'Running'
                 : state.isPaused
@@ -285,41 +285,41 @@ export default function ControlPanel() {
       <Dialog.Root open={exportSettingsOpen} onOpenChange={setExportSettingsOpen}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" />
-          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-slate-800 rounded-lg shadow-2xl p-6 w-full max-w-md z-50 border border-slate-200 dark:border-slate-600">
+          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 theme-panel p-6 w-full max-w-md z-50">
             <div className="flex items-center justify-between mb-6">
-              <Dialog.Title className="text-lg font-semibold text-slate-800 dark:text-slate-200">
+              <Dialog.Title className="text-lg font-semibold text-slate-200">
                 GIF Export Settings
               </Dialog.Title>
               <Dialog.Close asChild>
-                <button className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                  <X className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                <button className="p-2 rounded-md hover:bg-white/5 transition-colors">
+                  <X className="w-5 h-5 text-slate-400" />
                 </button>
               </Dialog.Close>
             </div>
             
             <div className="space-y-5">
-              <label className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300">
+              <label className="flex items-center gap-3 text-sm text-slate-300">
                 <input
                   type="checkbox"
                   checked={loop}
                   onChange={(e) => { setLoop(e.target.checked); setExportOptions({ loop: e.target.checked }); }}
-                  className="accent-blue-600"
+                  className="accent-blue-500"
                 />
                 Loop GIF
               </label>
 
-              <label className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300">
+              <label className="flex items-center gap-3 text-sm text-slate-300">
                 <input
                   type="checkbox"
                   checked={includeUI}
                   onChange={(e) => { setIncludeUI(e.target.checked); setExportOptions({ includeUI: e.target.checked }); }}
-                  className="accent-blue-600"
+                  className="accent-blue-500"
                 />
                 {selectedAlgorithm?.category === 'graph' ? 'Include legend' : 'Include progress bar'}
               </label>
 
               <div className="space-y-3">
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                <label className="block text-sm font-medium text-slate-300">
                   Frame delay: {delayMs}ms
                 </label>
                 <input
@@ -329,16 +329,16 @@ export default function ControlPanel() {
                   step="20"
                   value={delayMs}
                   onChange={(e) => { const v = Number(e.target.value); setDelayMs(v); setExportOptions({ delayMs: v }); }}
-                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-600"
+                  className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer"
                 />
-                <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400">
+                <div className="flex justify-between text-xs text-slate-400">
                   <span>Fast (40ms)</span>
                   <span>Slow (800ms)</span>
                 </div>
               </div>
             </div>
             
-            <div className="mt-6 text-xs text-slate-500 dark:text-slate-400 text-center">
+            <div className="mt-6 text-xs text-slate-400 text-center">
               Settings only affect future exports, not the current run speed.
             </div>
 
@@ -347,19 +347,19 @@ export default function ControlPanel() {
               <div className="mt-6 flex justify-end gap-3">
                 <button
                   onClick={resetCapturedFrames}
-                  className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500 dark:text-slate-200 transition-colors rounded-md border border-slate-300 dark:border-slate-500"
+                  className="px-4 py-2 bg-white/5 hover:bg-white/10 text-slate-200 transition-colors rounded-md border border-white/10"
                 >
                   Clear Frames
                 </button>
                 <Dialog.Close asChild>
-                  <button className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500 dark:text-slate-200 transition-colors rounded-md border border-slate-300 dark:border-slate-500">
+                  <button className="px-4 py-2 bg-white/5 hover:bg-white/10 text-slate-200 transition-colors rounded-md border border-white/10">
                     Cancel
                   </button>
                 </Dialog.Close>
                 <button
                   onClick={handleExportGif}
                   disabled={isExporting}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white transition-colors rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white transition-colors rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isExporting ? 'Exporting...' : 'Export to GIF'}
                 </button>

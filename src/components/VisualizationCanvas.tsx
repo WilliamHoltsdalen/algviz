@@ -63,13 +63,13 @@ export default function VisualizationCanvas() {
   const maxValue = state.data.length > 0 ? Math.max(...state.data) : 1;
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
+    <div className="theme-panel p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200">
+        <h2 className="text-xl font-semibold text-slate-200">
           Visualization
         </h2>
         <div className="flex items-center gap-4">
-          <label className="text-sm font-medium text-slate-600 dark:text-slate-400">
+          <label className="text-sm font-medium text-slate-400">
             Array Size:
           </label>
           <input
@@ -78,10 +78,10 @@ export default function VisualizationCanvas() {
             max="30"
             value={arraySize}
             onChange={(e) => setArraySize(Number(e.target.value))}
-            className="w-24 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-600"
+            className="w-24 h-2 bg-white/10 rounded-lg appearance-none cursor-pointer"
             disabled={state.isRunning}
           />
-          <span className="text-sm font-mono font-bold text-slate-700 dark:text-slate-300 w-8 text-center bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">
+          <span className="text-sm font-mono font-bold text-slate-300 w-8 text-center bg-white/5 border border-white/10 px-2 py-1 rounded">
             {arraySize}
           </span>
         </div>
@@ -90,7 +90,7 @@ export default function VisualizationCanvas() {
       {selectedAlgorithm ? (
         <div className="space-y-4" data-array-root>
           {/* Visualization Area */}
-          <div data-array-container className="bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-xl p-8 min-h-[400px] flex items-end justify-center gap-2 relative overflow-hidden">
+          <div data-array-container className="bg-white/5 border border-white/10 rounded-xl p-8 min-h-[400px] flex items-end justify-center gap-2 relative overflow-hidden">
             {/* Grid lines for better visual reference */}
             <div className="absolute inset-0 opacity-20">
               {Array.from({ length: 5 }, (_, i) => (
@@ -182,7 +182,7 @@ export default function VisualizationCanvas() {
                 </div>
               );
             }) : (
-              <div className="flex items-center justify-center w-full h-full text-slate-500 dark:text-slate-400">
+              <div className="flex items-center justify-center w-full h-full text-slate-500">
                 <div className="text-center">
                   <div className="text-4xl mb-2">📊</div>
                   <p className="text-sm">No data to visualize</p>
@@ -193,23 +193,23 @@ export default function VisualizationCanvas() {
 
           {/* Step Information */}
           {state.steps.length > 0 && state.currentStep < state.steps.length && (
-            <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-4" data-progress-bar>
+            <div className="bg-white/5 border border-white/10 rounded-lg p-4" data-progress-bar>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                <span className="text-sm font-medium text-slate-300">
                   Step {Math.min(state.currentStep + 1, state.totalSteps)} of {state.totalSteps}
                 </span>
-                <div className="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2 mx-4">
+                <div className="w-full bg-white/10 rounded-full h-2 mx-4">
                   <div
                     className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${state.totalSteps > 0 ? Math.min(((state.currentStep + 1) / state.totalSteps) * 100, 100) : 0}%` }}
                   />
                 </div>
-                <span className="text-sm text-slate-600 dark:text-slate-400">
+                <span className="text-sm text-slate-400">
                   {state.totalSteps > 0 ? Math.min(Math.round(((state.currentStep + 1) / state.totalSteps) * 100), 100) : 0}%
                 </span>
               </div>
               {state.steps[state.currentStep]?.message && (
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-slate-400">
                   {state.steps[state.currentStep].message}
                 </p>
               )}
@@ -217,7 +217,7 @@ export default function VisualizationCanvas() {
           )}
         </div>
       ) : (
-        <div className="flex items-center justify-center h-[300px] text-slate-500 dark:text-slate-400">
+        <div className="flex items-center justify-center h-[300px] text-slate-500">
           <div className="text-center">
             <div className="text-6xl mb-4">🎯</div>
             <p className="text-lg">Select an algorithm to start visualizing</p>

@@ -205,13 +205,13 @@ export default function GraphVisualization() {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
+    <div className="theme-panel p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200">
+        <h2 className="text-xl font-semibold text-slate-200">
           Graph Visualization
         </h2>
         <div className="flex items-center gap-4">
-          <label className="text-sm font-medium text-slate-600 dark:text-slate-400">
+          <label className="text-sm font-medium text-slate-400">
             Graph Size:
           </label>
           <input
@@ -220,10 +220,10 @@ export default function GraphVisualization() {
             max="12"
             value={graphSize}
             onChange={(e) => setGraphSize(Number(e.target.value))}
-            className="w-24 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-600"
+            className="w-24 h-2 bg-white/10 rounded-lg appearance-none cursor-pointer"
             disabled={state.isRunning}
           />
-          <span className="text-sm font-mono font-bold text-slate-700 dark:text-slate-300 w-8 text-center bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">
+          <span className="text-sm font-mono font-bold text-slate-300 w-8 text-center bg-white/5 border border-white/10 px-2 py-1 rounded">
             {graphSize}
           </span>
         </div>
@@ -232,7 +232,7 @@ export default function GraphVisualization() {
       {selectedAlgorithm ? (
         <div className="space-y-4" data-graph-root>
           {/* Graph Visualization Area */}
-          <div data-graph-container className="bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-xl p-8 min-h-[500px] relative overflow-hidden">
+          <div data-graph-container className="bg-white/5 border border-white/10 rounded-xl p-8 min-h-[500px] relative overflow-hidden">
             <svg
               width="100%"
               height="500"
@@ -327,16 +327,16 @@ export default function GraphVisualization() {
           </div>
 
           {/* Legend and Level Info */}
-          <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-4">
+          <div className="bg-white/5 border border-white/10 rounded-lg p-4">
             <div className="flex justify-between items-start mb-2">
-              <h4 className="font-semibold text-slate-800 dark:text-slate-200">Legend:</h4>
+              <h4 className="font-semibold text-slate-200">Legend:</h4>
               {/* BFS Level Indicator */}
               {state.steps.length > 0 && 'visited' in state.steps[state.currentStep] && (
                 <div className="text-right">
-                  <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  <div className="text-sm font-medium text-slate-300">
                     Current Level: {(state.steps[state.currentStep] as any).level || 0}
                   </div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">
+                  <div className="text-xs text-slate-400">
                     Visited: {(state.steps[state.currentStep] as any).visited?.size || 0} nodes
                   </div>
                 </div>
@@ -345,33 +345,33 @@ export default function GraphVisualization() {
             <div className="flex flex-wrap gap-4 text-sm">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-blue-500"></div>
-                <span className="text-slate-600 dark:text-slate-400">Unvisited</span>
+                <span className="text-slate-400">Unvisited</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-red-500"></div>
-                <span className="text-slate-600 dark:text-slate-400">Currently Visiting</span>
+                <span className="text-slate-400">Currently Visiting</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-yellow-500"></div>
-                <span className="text-slate-600 dark:text-slate-400">Being Relaxed/Explored</span>
+                <span className="text-slate-400">Being Relaxed/Explored</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-amber-500"></div>
-                <span className="text-slate-600 dark:text-slate-400">Being Discovered (BFS)</span>
+                <span className="text-slate-400">Being Discovered (BFS)</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-green-500"></div>
-                <span className="text-slate-600 dark:text-slate-400">Visited</span>
+                <span className="text-slate-400">Visited</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-violet-500"></div>
-                <span className="text-slate-600 dark:text-slate-400">Path</span>
+                <span className="text-slate-400">Path</span>
               </div>
             </div>
           </div>
         </div>
       ) : (
-        <div className="flex items-center justify-center h-[500px] text-slate-500 dark:text-slate-400">
+        <div className="flex items-center justify-center h-[500px] text-slate-500">
           <div className="text-center">
             <div className="text-6xl mb-4">🕸️</div>
             <p className="text-lg">Select a graph algorithm to start visualizing</p>

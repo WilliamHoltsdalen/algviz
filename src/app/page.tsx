@@ -9,14 +9,14 @@ import AlgorithmInfo from '@/components/AlgorithmInfo';
 export default function Home() {
   return (
     <AlgorithmProvider>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-        <div className="container mx-auto px-4 py-8">
+      <div className="min-h-screen">
+        <div className="container mx-auto px-4 py-12">
           {/* Header */}
-          <header className="text-center mb-8">
-            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+          <header className="text-center mb-10">
+            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 to-blue-200/90 bg-clip-text text-transparent mb-3">
               Algorithm Visualizer
             </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+            <p className="text-lg text-slate-300 theme-muted max-w-2xl mx-auto">
               Watch algorithms come to life with interactive step-by-step visualizations. 
               Learn how sorting, graph, and pathfinding algorithms work through beautiful animations.
             </p>
