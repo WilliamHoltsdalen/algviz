@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { useAlgorithm } from '@/context/AlgorithmContext';
 import { generateRandomArray } from '@/lib/utils';
 import { AlgorithmStep } from '@/types/algorithm';
+import PresetsPicker from './PresetsPicker';
+import { arrayPresets } from '@/data/presets';
 
 export default function VisualizationCanvas() {
   const { state, dispatch, selectedAlgorithm } = useAlgorithm();
@@ -84,6 +86,19 @@ export default function VisualizationCanvas() {
           <span className="text-sm font-mono font-bold text-slate-300 w-8 text-center bg-white/5 border border-white/10 px-2 py-1 rounded">
             {arraySize}
           </span>
+          {!state.isRunning && selectedAlgorithm && (
+            <PresetsPicker
+              mode="array"
+              arrayPresets={arrayPresets}
+              onSelectArray={(p) => {
+                const trimmed = p.data.slice(0, Math.max(5, Math.min(30, p.data.length)));
+                dispatch({ type: 'SET_DATA', payload: trimmed });
+                dispatch({ type: 'SET_ORIGINAL_DATA', payload: trimmed });
+                dispatch({ type: 'RESET' });
+                setArraySize(trimmed.length);
+              }}
+            />
+          )}
         </div>
       </div>
 

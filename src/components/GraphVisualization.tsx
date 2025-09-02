@@ -1,17 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAlgorithm } from '@/context/AlgorithmContext';
 import { Graph, GraphNode, GraphEdge } from '@/types/graph';
 import { generateRandomGraph } from '@/utils/graphGenerator';
 import { DijkstraStep } from '@/types/graph';
 import { BFSStep } from '@/algorithms/graph/bfs';
+import PresetsPicker from './PresetsPicker';
+import { graphPresets } from '@/data/presets';
 
 export default function GraphVisualization() {
   const { state, dispatch, selectedAlgorithm } = useAlgorithm();
   const [graph, setGraph] = useState<Graph>(generateRandomGraph(5));
   const [graphSize, setGraphSize] = useState(5);
+  const skippingNextAutoGenRef = useRef(false);
 
   // Generate new graph when algorithm changes
   useEffect(() => {
@@ -22,7 +25,21 @@ export default function GraphVisualization() {
       dispatch({ type: 'SET_ORIGINAL_GRAPH', payload: newGraph });
       dispatch({ type: 'RESET' });
     }
-  }, [selectedAlgorithm, graphSize, dispatch]);
+  }, [selectedAlgorithm, dispatch]);
+
+  // Regenerate when size changes (unless a preset just applied)
+  useEffect(() => {
+    if (selectedAlgorithm?.category !== 'graph') return;
+    if (skippingNextAutoGenRef.current) {
+      skippingNextAutoGenRef.current = false;
+      return;
+    }
+    const newGraph = generateRandomGraph(graphSize);
+    setGraph(newGraph);
+    dispatch({ type: 'SET_GRAPH', payload: newGraph });
+    dispatch({ type: 'SET_ORIGINAL_GRAPH', payload: newGraph });
+    dispatch({ type: 'RESET' });
+  }, [graphSize, selectedAlgorithm, dispatch]);
 
   // Update local graph state when context graph changes (e.g., from shuffle)
   useEffect(() => {
@@ -226,6 +243,21 @@ export default function GraphVisualization() {
           <span className="text-sm font-mono font-bold text-slate-300 w-8 text-center bg-white/5 border border-white/10 px-2 py-1 rounded">
             {graphSize}
           </span>
+          {!state.isRunning && selectedAlgorithm && (
+            <PresetsPicker
+              mode="graph"
+              graphPresets={graphPresets}
+              onSelectGraph={(p) => {
+                const g = p.build();
+                dispatch({ type: 'SET_GRAPH', payload: g });
+                dispatch({ type: 'SET_ORIGINAL_GRAPH', payload: g });
+                dispatch({ type: 'RESET' });
+                setGraph(g);
+                skippingNextAutoGenRef.current = true;
+                setGraphSize(g.nodes.length);
+              }}
+            />
+          )}
         </div>
       </div>
 
