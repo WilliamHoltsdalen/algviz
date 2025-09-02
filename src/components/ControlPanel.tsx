@@ -88,6 +88,22 @@ export default function ControlPanel() {
     }
   };
 
+  const applyArrayPreset = (preset: { data: number[] }) => {
+    if (!selectedAlgorithm || selectedAlgorithm.category !== 'sorting' || state.isRunning) return;
+    const trimmed = preset.data.slice(0, Math.max(5, Math.min(30, preset.data.length)));
+    dispatch({ type: 'SET_DATA', payload: trimmed });
+    dispatch({ type: 'SET_ORIGINAL_DATA', payload: trimmed });
+    dispatch({ type: 'RESET' });
+  };
+
+  const applyGraphPreset = (preset: { build: () => any }) => {
+    if (!selectedAlgorithm || selectedAlgorithm.category !== 'graph' || state.isRunning) return;
+    const g = preset.build();
+    dispatch({ type: 'SET_GRAPH', payload: g });
+    dispatch({ type: 'SET_ORIGINAL_GRAPH', payload: g });
+    dispatch({ type: 'RESET' });
+  };
+
   const handleExportGif = async () => {
     if (!selectedAlgorithm || state.steps.length === 0 || isExporting) return;
     
@@ -163,6 +179,7 @@ export default function ControlPanel() {
               <Shuffle className="w-5 h-5" />
             </motion.button>
           )}
+
 
           <motion.button
             onClick={handleStepBack}
