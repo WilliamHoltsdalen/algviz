@@ -179,7 +179,7 @@ const features = [
 
 export default function FeatureSection() {
   return (
-    <section className="relative">
+    <section id="features" className="relative">
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.06),transparent_60%)]" />
       <div className="container mx-auto px-4 py-16 md:py-24">
         <div className="mx-auto max-w-2xl text-center">

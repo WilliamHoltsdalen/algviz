@@ -6,7 +6,7 @@ import { ParallaxAlgorithmCards } from '@/components/ui/parallax-algorithm-cards
 
 export default function AlgorithmsShowcase() {
   return (
-    <section className="relative ">
+    <section id="algorithms" className="relative">
 
       <div className="container mx-auto px-4 py-16 md:py-24">
         <div className="mx-auto max-w-3xl text-center">

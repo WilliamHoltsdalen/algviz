@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { Star } from 'lucide-react';
 
 export default function BottomCTA() {
   return (
@@ -50,11 +51,12 @@ export default function BottomCTA() {
               Launch app
             </a>
             <a
-              href="https://github.com/"
+              href="https://github.com/WilliamHoltsdalen/algviz"
               target="_blank"
               rel="noopener"
               className="inline-flex items-center justify-center rounded-md px-5 py-3 text-sm font-semibold text-slate-200 border border-white/15 bg-white/5 hover:bg-white/10"
             >
+              <Star className="h-4 w-4 mr-2" aria-hidden />
               Star on GitHub
             </a>
           </motion.div>

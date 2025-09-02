@@ -67,7 +67,7 @@ export const ParallaxAlgorithmCards = ({
 
   return (
     <div
-      className={cn("w-full items-start", className)}
+      className={cn("w-full items-start relative overflow-hidden", className)}
       ref={gridRef}
     >
       <div
