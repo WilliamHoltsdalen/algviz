@@ -1,7 +1,7 @@
 declare module 'gifshot' {
   const gifshot: {
     createGIF: (
-      options: any,
+      options: unknown,
       callback: (result: { error?: boolean; errorMsg?: string; image?: string }) => void
     ) => void;
   };

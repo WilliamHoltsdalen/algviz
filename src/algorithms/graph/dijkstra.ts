@@ -1,4 +1,4 @@
-import { Graph, GraphNode, GraphEdge, DijkstraStep } from '@/types/graph';
+import { Graph, DijkstraStep } from '@/types/graph';
 
 export function dijkstraSteps(graph: Graph, startNodeId: string, endNodeId: string): DijkstraStep[] {
   const steps: DijkstraStep[] = [];

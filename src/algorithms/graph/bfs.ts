@@ -1,4 +1,4 @@
-import { Graph, GraphNode, GraphEdge } from '@/types/graph';
+import { Graph } from '@/types/graph';
 
 export interface BFSStep {
   type: 'visit' | 'explore' | 'discover' | 'path' | 'complete';
@@ -14,7 +14,7 @@ export interface BFSStep {
 
 export function bfsSteps(graph: Graph, startNodeId: string, endNodeId: string): BFSStep[] {
   const steps: BFSStep[] = [];
-  const nodes = [...graph.nodes];
+  // const nodes = [...graph.nodes];
   const edges = [...graph.edges];
   
   // Initialize tracking structures

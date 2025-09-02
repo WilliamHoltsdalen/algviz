@@ -17,7 +17,6 @@ type GifShotOptions = {
 
 type GifShotResult = { image: string };
 
-declare const window: any;
 
 // Module-level storage so all hook instances share the same frames
 let framesStore: string[] = [];
@@ -100,9 +99,7 @@ export function useGifExport() {
       }
 
       for (let i = 0; i < frames; i++) {
-        // eslint-disable-next-line no-await-in-loop
         await captureFrame(element, width, height);
-        // eslint-disable-next-line no-await-in-loop
         await new Promise((r) => setTimeout(r, delayMs));
       }
     },
@@ -152,15 +149,16 @@ export function useGifExport() {
             numWorkers: 2,
             sampleInterval: 10,
           };
-          (gifOptions as any).repeat = loop ? 0 : -1; // gif.js: 0 = forever, -1 = no repeat
-          (gifOptions as any).numLoops = loop ? 0 : 1; // alternative field in some builds
-          (gifOptions as any).loop = loop; // boolean flag some wrappers read
+          (gifOptions as unknown as Record<string, unknown>).repeat = loop ? 0 : -1; // gif.js: 0 = forever, -1 = no repeat
+          (gifOptions as unknown as Record<string, unknown>).numLoops = loop ? 0 : 1; // alternative field in some builds
+          (gifOptions as unknown as Record<string, unknown>).loop = loop; // boolean flag some wrappers read
           // Configure worker path (use our bundled one) and disposal method to prevent frame blending
-          (gifOptions as any).workerScript = '/gif.worker.js';
+          (gifOptions as unknown as Record<string, unknown>).workerScript = '/gif.worker.js';
           // disposal: 2 => restore to background, avoids ghosting from previous frames
-          (gifOptions as any).disposal = 2;
+          (gifOptions as unknown as Record<string, unknown>).disposal = 2;
 
-          (gifshot as any).createGIF(gifOptions as any, (obj: any) => {
+          (gifshot as unknown as { createGIF: (opts: unknown, cb: (obj: { error?: boolean; errorMsg?: string; image?: string }) => void) => void })
+            .createGIF(gifOptions as unknown, (obj) => {
             if (!obj || obj.error) {
               reject(new Error(obj?.errorMsg || 'Failed to create GIF'));
               return;

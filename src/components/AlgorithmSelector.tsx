@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { algorithms, getAlgorithmsByCategory } from '@/data/algorithms';
+import { getAlgorithmsByCategory } from '@/data/algorithms';
 import { useAlgorithm } from '@/context/AlgorithmContext';
 import { Algorithm } from '@/types/algorithm';
 import { cn } from '@/lib/utils';

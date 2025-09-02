@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAlgorithm } from '@/context/AlgorithmContext';
 import { generateRandomArray } from '@/lib/utils';
-import { AlgorithmStep } from '@/types/algorithm';
+// import type { AlgorithmStep } from '@/types/algorithm';
 import PresetsPicker from './PresetsPicker';
 import { arrayPresets } from '@/data/presets';
 
@@ -22,7 +22,7 @@ export default function VisualizationCanvas() {
     }
   }, [selectedAlgorithm, arraySize, dispatch]);
 
-  const getBarColor = (index: number, value: number) => {
+  const getBarColor = (index: number) => {
     // Safety check: ensure currentStep is within bounds and exists
     if (state.currentStep >= state.steps.length || state.steps.length === 0) {
       return '#3b82f6'; // blue-500
@@ -145,7 +145,7 @@ export default function VisualizationCanvas() {
                       className="absolute left-0 bottom-0 w-full rounded-t-lg shadow-lg transition-all duration-300 hover:shadow-xl overflow-hidden"
                       style={{
                         height: `${barHeight}px`,
-                        backgroundColor: getBarColor(index, safeValue),
+                        backgroundColor: getBarColor(index),
                       }}
                       whileHover={{ scale: 1.05 }}
                       initial={{ height: 0 }}
@@ -157,15 +157,20 @@ export default function VisualizationCanvas() {
                       {/* Shine effect */}
                       <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-white/30 to-transparent rounded-t-lg" />
                       {/* Active state glow */}
-                      {(state.steps[state.currentStep] && 'indices' in state.steps[state.currentStep] && (state.steps[state.currentStep] as any).indices?.includes(index)) && (
+                      {(
+                        state.steps[state.currentStep] &&
+                        'indices' in state.steps[state.currentStep] &&
+                        Array.isArray((state.steps[state.currentStep] as unknown as { indices?: unknown }).indices) &&
+                        (state.steps[state.currentStep] as unknown as { indices?: number[] }).indices!.includes(index)
+                      ) && (
                         <motion.div
                           className="absolute inset-0 rounded-t-lg"
-                          style={{ boxShadow: `0 0 20px ${getBarColor(index, safeValue)}40` }}
+                          style={{ boxShadow: `0 0 20px ${getBarColor(index)}40` }}
                           animate={{
                             boxShadow: [
-                              `0 0 20px ${getBarColor(index, safeValue)}40`,
-                              `0 0 30px ${getBarColor(index, safeValue)}60`,
-                              `0 0 20px ${getBarColor(index, safeValue)}40`,
+                              `0 0 20px ${getBarColor(index)}40`,
+                              `0 0 30px ${getBarColor(index)}60`,
+                              `0 0 20px ${getBarColor(index)}40`,
                             ],
                           }}
                           transition={{ duration: 1, repeat: Infinity }}

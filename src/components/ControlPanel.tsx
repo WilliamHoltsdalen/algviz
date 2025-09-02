@@ -30,6 +30,41 @@ export default function ControlPanel() {
     }
   };
 
+  const handleStepChange = (step: number) => {
+    if (step >= 0 && step < state.totalSteps) {
+      // Recompute the visualization state by applying the step's snapshot if present,
+      // otherwise derive the array state by replaying from the beginning to target step.
+      const target = state.steps[step] as unknown;
+
+      if (
+        typeof target === 'object' &&
+        target !== null &&
+        'array' in (target as Record<string, unknown>) &&
+        Array.isArray((target as { array?: unknown }).array)
+      ) {
+        dispatch({ type: 'SET_DATA', payload: (target as { array: number[] }).array });
+        dispatch({ type: 'SET_CURRENT_STEP', payload: step });
+        return;
+      }
+
+      // Sorting algorithms should have array snapshots on every mutation/highlight.
+      // As a fallback, derive state from the closest previous snapshot.
+      for (let i = step; i >= 0; i--) {
+        const s = state.steps[i] as unknown;
+        if (
+          typeof s === 'object' &&
+          s !== null &&
+          'array' in (s as Record<string, unknown>) &&
+          Array.isArray((s as { array?: unknown }).array)
+        ) {
+          dispatch({ type: 'SET_DATA', payload: (s as { array: number[] }).array });
+          break;
+        }
+      }
+      dispatch({ type: 'SET_CURRENT_STEP', payload: step });
+    }
+  };
+
   const handleReset = () => {
     resetCapturedFrames();
     dispatch({ type: 'RESET' });
@@ -88,21 +123,7 @@ export default function ControlPanel() {
     }
   };
 
-  const applyArrayPreset = (preset: { data: number[] }) => {
-    if (!selectedAlgorithm || selectedAlgorithm.category !== 'sorting' || state.isRunning) return;
-    const trimmed = preset.data.slice(0, Math.max(5, Math.min(30, preset.data.length)));
-    dispatch({ type: 'SET_DATA', payload: trimmed });
-    dispatch({ type: 'SET_ORIGINAL_DATA', payload: trimmed });
-    dispatch({ type: 'RESET' });
-  };
-
-  const applyGraphPreset = (preset: { build: () => any }) => {
-    if (!selectedAlgorithm || selectedAlgorithm.category !== 'graph' || state.isRunning) return;
-    const g = preset.build();
-    dispatch({ type: 'SET_GRAPH', payload: g });
-    dispatch({ type: 'SET_ORIGINAL_GRAPH', payload: g });
-    dispatch({ type: 'RESET' });
-  };
+  // Preset application is handled in child components where relevant.
 
   const handleExportGif = async () => {
     if (!selectedAlgorithm || state.steps.length === 0 || isExporting) return;
@@ -125,7 +146,7 @@ export default function ControlPanel() {
         description: 'Your animation has been downloaded.',
       });
       setExportSettingsOpen(false);
-    } catch (error) {
+    } catch {
       toast.error('Export failed', {
         description: 'There was an error creating your GIF. Please try again.',
       });

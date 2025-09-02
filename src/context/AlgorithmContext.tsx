@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 import { Algorithm, VisualizationState, AlgorithmStep } from '@/types/algorithm';
+import type { Graph } from '@/types/graph';
 
 interface AlgorithmContextType {
   state: VisualizationState;
@@ -13,8 +14,8 @@ interface AlgorithmContextType {
 type AlgorithmAction =
   | { type: 'SET_DATA'; payload: number[] }
   | { type: 'SET_ORIGINAL_DATA'; payload: number[] }
-  | { type: 'SET_GRAPH'; payload: any }
-  | { type: 'SET_ORIGINAL_GRAPH'; payload: any }
+  | { type: 'SET_GRAPH'; payload: Graph | undefined }
+  | { type: 'SET_ORIGINAL_GRAPH'; payload: Graph | undefined }
   | { type: 'SET_STEPS'; payload: AlgorithmStep[] }
   | { type: 'SET_RUNNING'; payload: boolean }
   | { type: 'SET_PAUSED'; payload: boolean }

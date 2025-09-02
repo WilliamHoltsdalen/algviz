@@ -8,6 +8,8 @@ import { mergesortSteps } from '@/algorithms/sorting/mergesort';
 import { dijkstraSteps } from '@/algorithms/graph/dijkstra';
 import { bfsSteps } from '@/algorithms/graph/bfs';
 import { useGifExport, getGlobalExportOptions } from '@/hooks/useGifExport';
+import type { Graph } from '@/types/graph';
+import type { AlgorithmStep } from '@/types/algorithm';
 
 export function useAlgorithmExecution() {
   const { state, dispatch, selectedAlgorithm } = useAlgorithm();
@@ -24,7 +26,7 @@ export function useAlgorithmExecution() {
       dispatch({ type: 'SET_ORIGINAL_DATA', payload: [...state.data] });
     }
 
-    let steps: any[] = [];
+    let steps: AlgorithmStep[] = [];
     switch (selectedAlgorithm.id) {
       case 'quicksort':
         steps = quicksortSteps(state.data);
@@ -41,9 +43,9 @@ export function useAlgorithmExecution() {
           steps = [];
           break;
         }
-        const startNode = state.graph.nodes.find((n: any) => n.isStart)?.id || 'A';
-        const endNode = state.graph.nodes.find((n: any) => n.isEnd)?.id || 'G';
-        steps = dijkstraSteps(state.graph, startNode, endNode);
+        const startNode = state.graph.nodes.find((n) => n.isStart)?.id || 'A';
+        const endNode = state.graph.nodes.find((n) => n.isEnd)?.id || 'G';
+        steps = dijkstraSteps(state.graph as Graph, startNode, endNode);
         break;
       case 'bfs':
         // For BFS, we need to find start and end nodes
@@ -51,9 +53,9 @@ export function useAlgorithmExecution() {
           steps = [];
           break;
         }
-        const bfsStartNode = state.graph.nodes.find((n: any) => n.isStart)?.id || 'A';
-        const bfsEndNode = state.graph.nodes.find((n: any) => n.isEnd)?.id || 'G';
-        steps = bfsSteps(state.graph, bfsStartNode, bfsEndNode);
+        const bfsStartNode = state.graph.nodes.find((n) => n.isStart)?.id || 'A';
+        const bfsEndNode = state.graph.nodes.find((n) => n.isEnd)?.id || 'G';
+        steps = bfsSteps(state.graph as Graph, bfsStartNode, bfsEndNode);
         break;
       default:
         steps = [];
@@ -96,7 +98,7 @@ export function useAlgorithmExecution() {
       dispatch({ type: 'SET_RUNNING', payload: false });
       dispatch({ type: 'SET_PAUSED', payload: false });
     }
-  }, [state.currentStep, state.totalSteps, state.steps, dispatch]);
+  }, [state.currentStep, state.totalSteps, state.steps, dispatch, captureFrame]);
 
   // Auto-execute when running
   useEffect(() => {
@@ -107,7 +109,7 @@ export function useAlgorithmExecution() {
 
       return () => clearTimeout(timer);
     }
-  }, [state.isRunning, state.isPaused, state.currentStep, state.speed, executeStep]);
+  }, [state.isRunning, state.isPaused, state.currentStep, state.speed, state.steps.length, executeStep]);
 
   // When a new run starts, clear previous captured frames
   useEffect(() => {

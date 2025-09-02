@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAlgorithm } from '@/context/AlgorithmContext';
-import { Graph, GraphNode, GraphEdge } from '@/types/graph';
+import { Graph } from '@/types/graph';
 import { generateRandomGraph } from '@/utils/graphGenerator';
 import { DijkstraStep } from '@/types/graph';
 import { BFSStep } from '@/algorithms/graph/bfs';
@@ -25,7 +25,7 @@ export default function GraphVisualization() {
       dispatch({ type: 'SET_ORIGINAL_GRAPH', payload: newGraph });
       dispatch({ type: 'RESET' });
     }
-  }, [selectedAlgorithm, dispatch]);
+  }, [selectedAlgorithm, dispatch, graphSize]);
 
   // Regenerate when size changes (unless a preset just applied)
   useEffect(() => {
@@ -369,10 +369,10 @@ export default function GraphVisualization() {
               {state.steps.length > 0 && 'visited' in state.steps[state.currentStep] && (
                 <div className="text-right">
                   <div className="text-sm font-medium text-slate-300">
-                    Current Level: {(state.steps[state.currentStep] as any).level || 0}
+                    Current Level: {'level' in (state.steps[state.currentStep] as unknown as Record<string, unknown>) ? (state.steps[state.currentStep] as unknown as { level?: number }).level ?? 0 : 0}
                   </div>
                   <div className="text-xs text-slate-400">
-                    Visited: {(state.steps[state.currentStep] as any).visited?.size || 0} nodes
+                    Visited: {'visited' in (state.steps[state.currentStep] as unknown as Record<string, unknown>) && (state.steps[state.currentStep] as unknown as { visited?: Set<string> }).visited ? (state.steps[state.currentStep] as unknown as { visited?: Set<string> }).visited!.size : 0} nodes
                   </div>
                 </div>
               )}
