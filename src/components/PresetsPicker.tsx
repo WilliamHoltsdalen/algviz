@@ -22,6 +22,7 @@ export default function PresetsPicker({
   onSelectGraph,
 }: PresetsPickerProps) {
   const [query, setQuery] = useState('');
+  const [open, setOpen] = useState(false);
 
   const items = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -36,7 +37,7 @@ export default function PresetsPicker({
   }, [mode, arrayPresets, graphPresets, query]);
 
   return (
-    <DropdownMenu.Root>
+    <DropdownMenu.Root open={open} onOpenChange={setOpen}>
       <DropdownMenu.Trigger asChild>
         <motion.button
           className="px-3 py-2 rounded-md bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 inline-flex items-center gap-2"
@@ -77,6 +78,7 @@ export default function PresetsPicker({
                   e.preventDefault();
                   if (mode === 'array' && onSelectArray) onSelectArray(p as ArrayPreset);
                   if (mode === 'graph' && onSelectGraph) onSelectGraph(p as GraphPreset);
+                  setOpen(false);
                 }}
                 className="group rounded-md px-2 py-2 outline-none cursor-pointer data-[highlighted]:bg-white/10 border border-transparent data-[highlighted]:border-white/10"
               >
