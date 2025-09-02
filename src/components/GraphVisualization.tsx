@@ -16,7 +16,6 @@ export default function GraphVisualization() {
   // Generate new graph when algorithm changes
   useEffect(() => {
     if (selectedAlgorithm?.category === 'graph') {
-      // Always use generateRandomGraph with the selected size for consistent behavior
       const newGraph = generateRandomGraph(graphSize);
       setGraph(newGraph);
       dispatch({ type: 'SET_GRAPH', payload: newGraph });
@@ -231,9 +230,9 @@ export default function GraphVisualization() {
       </div>
 
       {selectedAlgorithm ? (
-        <div className="space-y-4">
+        <div className="space-y-4" data-graph-root>
           {/* Graph Visualization Area */}
-          <div className="bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-xl p-8 min-h-[500px] relative overflow-hidden">
+          <div data-graph-container className="bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-xl p-8 min-h-[500px] relative overflow-hidden">
             <svg
               width="100%"
               height="500"
@@ -266,7 +265,9 @@ export default function GraphVisualization() {
                       y={(fromNode.y + toNode.y) / 2}
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      className="text-xs font-bold fill-slate-700 dark:fill-slate-300"
+                      fill="#ffffff"
+                      fontSize="10"
+                      fontWeight={700}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.5 }}

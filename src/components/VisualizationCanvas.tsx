@@ -21,8 +21,16 @@ export default function VisualizationCanvas() {
   }, [selectedAlgorithm, arraySize, dispatch]);
 
   const getBarColor = (index: number, value: number) => {
+    // Safety check: ensure currentStep is within bounds and exists
+    if (state.currentStep >= state.steps.length || state.steps.length === 0) {
+      return '#3b82f6'; // blue-500
+    }
+    
     const currentStep = state.steps[state.currentStep];
     if (!currentStep) return '#3b82f6'; // blue-500
+
+    // Type guard to ensure this is an array algorithm step
+    if (!('indices' in currentStep)) return '#3b82f6';
 
     switch (currentStep.type) {
       case 'compare':
@@ -80,9 +88,9 @@ export default function VisualizationCanvas() {
       </div>
 
       {selectedAlgorithm ? (
-        <div className="space-y-4">
+        <div className="space-y-4" data-array-root>
           {/* Visualization Area */}
-          <div className="bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-xl p-8 min-h-[400px] flex items-end justify-center gap-2 relative overflow-hidden">
+          <div data-array-container className="bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-xl p-8 min-h-[400px] flex items-end justify-center gap-2 relative overflow-hidden">
             {/* Grid lines for better visual reference */}
             <div className="absolute inset-0 opacity-20">
               {Array.from({ length: 5 }, (_, i) => (
@@ -94,7 +102,7 @@ export default function VisualizationCanvas() {
               ))}
             </div>
             
-            {state.data.map((value, index) => {
+            {state.data.length > 0 ? state.data.map((value, index) => {
               // Ensure we have valid data, use 1 as fallback
               const safeValue = (value === undefined || value === null || isNaN(value)) ? 1 : value;
               if (value !== safeValue) {
@@ -104,7 +112,7 @@ export default function VisualizationCanvas() {
               const targetHeight = 280; // px available for bar height (excludes labels)
               const minBarHeight = 20; // px minimum so small values remain visible
               const barHeight = Math.max(minBarHeight, (safeValue / maxValue) * targetHeight);
-              const barWidth = Math.max(12, (100 / state.data.length) * 1.2);
+              const barWidth = Math.max(12, state.data.length > 0 ? (100 / state.data.length) * 1.2 : 12);
               const baseDelay = index * 0.01; // stagger per bar
               const barDuration = 0.3;
 
@@ -134,7 +142,7 @@ export default function VisualizationCanvas() {
                       {/* Shine effect */}
                       <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-white/30 to-transparent rounded-t-lg" />
                       {/* Active state glow */}
-                      {state.steps[state.currentStep]?.indices?.includes(index) && (
+                      {(state.steps[state.currentStep] && 'indices' in state.steps[state.currentStep] && (state.steps[state.currentStep] as any).indices?.includes(index)) && (
                         <motion.div
                           className="absolute inset-0 rounded-t-lg"
                           style={{ boxShadow: `0 0 20px ${getBarColor(index, safeValue)}40` }}
@@ -173,12 +181,19 @@ export default function VisualizationCanvas() {
                   </motion.div>
                 </div>
               );
-            })}
+            }) : (
+              <div className="flex items-center justify-center w-full h-full text-slate-500 dark:text-slate-400">
+                <div className="text-center">
+                  <div className="text-4xl mb-2">📊</div>
+                  <p className="text-sm">No data to visualize</p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Step Information */}
-          {state.steps.length > 0 && (
-            <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-4">
+          {state.steps.length > 0 && state.currentStep < state.steps.length && (
+            <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-4" data-progress-bar>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Step {Math.min(state.currentStep + 1, state.totalSteps)} of {state.totalSteps}
@@ -186,11 +201,11 @@ export default function VisualizationCanvas() {
                 <div className="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2 mx-4">
                   <div
                     className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${Math.min(((state.currentStep + 1) / state.totalSteps) * 100, 100)}%` }}
+                    style={{ width: `${state.totalSteps > 0 ? Math.min(((state.currentStep + 1) / state.totalSteps) * 100, 100) : 0}%` }}
                   />
                 </div>
                 <span className="text-sm text-slate-600 dark:text-slate-400">
-                  {Math.min(Math.round(((state.currentStep + 1) / state.totalSteps) * 100), 100)}%
+                  {state.totalSteps > 0 ? Math.min(Math.round(((state.currentStep + 1) / state.totalSteps) * 100), 100) : 0}%
                 </span>
               </div>
               {state.steps[state.currentStep]?.message && (

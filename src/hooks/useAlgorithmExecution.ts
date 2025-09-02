@@ -7,9 +7,11 @@ import { bubblesortSteps } from '@/algorithms/sorting/bubblesort';
 import { mergesortSteps } from '@/algorithms/sorting/mergesort';
 import { dijkstraSteps } from '@/algorithms/graph/dijkstra';
 import { bfsSteps } from '@/algorithms/graph/bfs';
+import { useGifExport, getGlobalExportOptions } from '@/hooks/useGifExport';
 
 export function useAlgorithmExecution() {
   const { state, dispatch, selectedAlgorithm } = useAlgorithm();
+  const { captureFrame, reset: resetFrames } = useGifExport();
 
   const generateSteps = useCallback(() => {
     if (!selectedAlgorithm || !state.data.length) return;
@@ -19,7 +21,7 @@ export function useAlgorithmExecution() {
       dispatch({ type: 'SET_ORIGINAL_DATA', payload: [...state.data] });
     }
 
-    let steps;
+    let steps: any[] = [];
     switch (selectedAlgorithm.id) {
       case 'quicksort':
         steps = quicksortSteps(state.data);
@@ -68,6 +70,25 @@ export function useAlgorithmExecution() {
       }
       
       dispatch({ type: 'SET_CURRENT_STEP', payload: nextStep });
+      
+        // Capture frame immediately after the step is executed
+        const { includeUI } = getGlobalExportOptions();
+        const graphRoot = document.querySelector('[data-graph-root]') as HTMLElement | null;
+        const arrayRoot = document.querySelector('[data-array-root]') as HTMLElement | null;
+        const graphInner = document.querySelector('[data-graph-container]') as HTMLElement | null;
+        const arrayInner = document.querySelector('[data-array-container]') as HTMLElement | null;
+        const container = includeUI
+          ? (graphRoot || arrayRoot)
+          : (graphInner || arrayInner);
+      
+      if (container) {
+        // Give a brief time for DOM to update and animations to settle
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            captureFrame(container, container.offsetWidth, container.offsetHeight).catch(() => {});
+          }, 50); // Small delay to let animations settle
+        });
+      }
     } else {
       dispatch({ type: 'SET_RUNNING', payload: false });
       dispatch({ type: 'SET_PAUSED', payload: false });
@@ -77,18 +98,44 @@ export function useAlgorithmExecution() {
   // Auto-execute when running
   useEffect(() => {
     if (state.isRunning && !state.isPaused && state.steps.length > 0) {
-      const timer = setTimeout(() => {
-        executeStep();
-      }, state.speed);
+              const timer = setTimeout(() => {
+          executeStep();
+        }, state.speed);
 
       return () => clearTimeout(timer);
     }
   }, [state.isRunning, state.isPaused, state.currentStep, state.speed, executeStep]);
 
+  // When a new run starts, clear previous captured frames
+  useEffect(() => {
+    if (state.isRunning && state.currentStep === 0) {
+      resetFrames();
+    }
+  }, [state.isRunning, state.currentStep, resetFrames]);
+
   // Generate steps when algorithm or data changes
   useEffect(() => {
     generateSteps();
   }, [generateSteps]);
+
+  // Capture a final settled frame once the run completes
+  useEffect(() => {
+    if (!state.isRunning && state.steps.length > 0 && state.currentStep >= state.totalSteps - 1) {
+      const { includeUI } = getGlobalExportOptions();
+      const graphRoot = document.querySelector('[data-graph-root]') as HTMLElement | null;
+      const arrayRoot = document.querySelector('[data-array-root]') as HTMLElement | null;
+      const graphInner = document.querySelector('[data-graph-container]') as HTMLElement | null;
+      const arrayInner = document.querySelector('[data-array-container]') as HTMLElement | null;
+      const container = includeUI ? (graphRoot || arrayRoot) : (graphInner || arrayInner);
+      if (container) {
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            captureFrame(container, container.offsetWidth, container.offsetHeight).catch(() => {});
+          }, 80);
+        });
+      }
+    }
+  }, [state.isRunning, state.currentStep, state.totalSteps, state.steps.length, captureFrame]);
 
   return {
     generateSteps,
