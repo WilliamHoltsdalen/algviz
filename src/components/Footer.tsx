@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Github, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -59,9 +60,17 @@ export default function Footer() {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6 }}
             >
-              <h3 className="text-xl font-bold text-slate-100 mb-4">AlgViz</h3>
+              <Link href="/" aria-label="AlgViz Home" className="inline-flex items-center mb-4">
+                <Image
+                  src="/AlgViz_dark.svg"
+                  alt="AlgViz logo"
+                  width={180}
+                  height={48}
+                  priority
+                />
+              </Link>
               <p className="text-slate-300 text-sm leading-relaxed mb-6 max-w-sm">
-                Visualize algorithms with elegant, step-by-step animations. Built for clarity, not flash.
+                Step through animations that bring algorithms to life, and watch them work their magic.
               </p>
               
               {/* Social links */}

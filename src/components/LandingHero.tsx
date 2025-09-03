@@ -5,7 +5,7 @@ import LiveSortingPreview from './LiveSortingPreview';
 import { BackgroundGradient } from './ui/background-gradient';
 import { HoverBorderGradient } from './ui/hover-border-gradient';
 import Link from 'next/link';
-import { Github, Star } from 'lucide-react';
+import { Star } from 'lucide-react';
 
 export default function LandingHero() {
   return (
@@ -30,7 +30,7 @@ export default function LandingHero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.5 }}
             >
-              Step‑by‑step animations that bring algorithms to life. Watch algorithms work their magic.
+              Step through animations that bring algorithms to life, and watch them work their magic.
             </motion.p>
 
             <motion.div
