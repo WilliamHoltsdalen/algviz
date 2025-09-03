@@ -85,7 +85,7 @@ function SidebarMenu({
           </div>
           
           {/* Support Section */}
-          <div className="mt-12">
+          <div className="mt-auto">
             {sidebarOpen && (
               <>
                 <p className="text-sm font-medium text-neutral-700 dark:text-neutral-200">Support</p>
