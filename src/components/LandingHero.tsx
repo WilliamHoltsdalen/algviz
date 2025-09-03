@@ -30,7 +30,7 @@ export default function LandingHero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.5 }}
             >
-              Step‑by‑step animations that bring algorithms to life. Watch algorithms work their magic.
+              Step through animations that bring algorithms to life, and watch them work their magic.
             </motion.p>
 
             <motion.div
