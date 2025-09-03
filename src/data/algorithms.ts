@@ -85,6 +85,33 @@ export const algorithms: Algorithm[] = [
     spaceComplexity: 'O(b^d)',
     isImplemented: false,
   },
+  {
+    id: 'heapsort',
+    name: 'Heap Sort',
+    category: 'sorting',
+    description: 'Uses a binary heap data structure to sort elements efficiently.',
+    timeComplexity: 'O(n log n)',
+    spaceComplexity: 'O(1)',
+    isImplemented: false,
+  },
+  {
+    id: 'kruskal',
+    name: "Kruskal's Algorithm",
+    category: 'graph',
+    description: 'Finds the minimum spanning tree of a weighted undirected graph.',
+    timeComplexity: 'O(E log E)',
+    spaceComplexity: 'O(V)',
+    isImplemented: false,
+  },
+  {
+    id: 'prim',
+    name: "Prim's Algorithm",
+    category: 'graph',
+    description: 'Greedy algorithm to compute a minimum spanning tree by growing from a starting node.',
+    timeComplexity: 'O(E log V)',
+    spaceComplexity: 'O(V)',
+    isImplemented: false,
+  },
 ];
 
 export const getAlgorithmsByCategory = (category: string) => {
