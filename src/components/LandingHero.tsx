@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import LiveSortingPreview from './LiveSortingPreview';
+import LiveGraphPreview from './LiveGraphPreview';
 import { BackgroundGradient } from './ui/background-gradient';
 import { HoverBorderGradient } from './ui/hover-border-gradient';
 import Link from 'next/link';
@@ -80,7 +80,7 @@ export default function LandingHero() {
           >
             <BackgroundGradient containerClassName="rounded-3xl" animate>
               <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-3 backdrop-blur-sm">
-                <LiveSortingPreview />
+                <LiveGraphPreview />
               </div>
             </BackgroundGradient>
           </motion.div>
