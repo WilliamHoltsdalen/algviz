@@ -8,9 +8,9 @@ import AlgorithmInfo from '@/components/AlgorithmInfo';
 import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { IconArrowLeft, IconBrandTabler, IconSettings, IconUserBolt, IconBug, IconHelp, IconInfoCircle } from '@tabler/icons-react';
-import { motion } from 'motion/react';
-import { useAlgorithm } from '@/context/AlgorithmContext';
+import { IconBrandTabler, IconSettings, IconUserBolt, IconBug, IconInfoCircle } from '@tabler/icons-react';
+import Link from 'next/link';
+import Image from 'next/image';
 
 function SidebarMenu({
   sidebarOpen,
@@ -23,33 +23,38 @@ function SidebarMenu({
   category: string;
   setCategory: (c: string) => void;
 }) {
-  const { dispatch } = useAlgorithm();
   return (
     <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
       <SidebarBody className="justify-between gap-8">
         <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
-          <a href="/" className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black">
+          <Link href="/" className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black">
             {sidebarOpen ? (
               <>
-                <img 
+                <Image 
                   src="/AlgViz_light.svg" 
                   alt="AlgViz" 
+                  width={96}
+                  height={96}
                   className="h-24 w-24 shrink-0 dark:hidden"
                 />
-                <img 
+                <Image 
                   src="/AlgViz_dark.svg" 
                   alt="AlgViz" 
+                  width={192}
+                  height={64}
                   className="h-16 w-48 shrink-0 hidden dark:block"
                 />
               </>
             ) : (
-              <img 
+              <Image 
                 src="/icon.svg" 
                 alt="AlgViz" 
+                width={40}
+                height={40}
                 className="h-10 w-10 shrink-0"
               />
             )}
-          </a>
+          </Link>
           <div className="mt-8 flex flex-col gap-2">
             { sidebarOpen && (
               <>
