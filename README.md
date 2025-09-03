@@ -10,7 +10,7 @@
     <a href="https://github.com/WilliamHoltsdalen/algviz/issues">
       <img src="https://img.shields.io/badge/Issues-Report%20Bug-red?style=for-the-badge&logo=github" alt="Report Issues">
     </a>
-    <a href="https://github.com/WilliamHoltsdalen/algviz/blob/main/LICENSE">
+    <a href="https://github.com/WilliamHoltsdalen/algviz/blob/main/LICENSE.txt">
       <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License">
     </a>
   </div>
@@ -74,11 +74,11 @@ This project was also a personal challenge to level up my web development skills
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.txt) file for details.
 
 ---
 
 <div align="center">
-  <p>Made ️by <a href="https://github.com/WilliamHoltsdalen">William Holtsdalen</a></p>
+  <p>Made by <a href="https://github.com/WilliamHoltsdalen">William Holtsdalen</a></p>
   <p>Questions? <a href="https://github.com/WilliamHoltsdalen/algviz/issues">Open an issue</a> or <a href="mailto:william@williamholtsdalen.com">send me an email</a>!</p>
 </div>
