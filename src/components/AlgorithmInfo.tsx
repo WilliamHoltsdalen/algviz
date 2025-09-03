@@ -69,36 +69,6 @@ export default function AlgorithmInfo() {
             </p>
           </div>
         </div>
-
-        {/* Algorithm-specific information */}
-        <div className="bg-blue-600/10 rounded-lg p-4 border border-blue-600/20">
-          <h4 className="font-semibold text-slate-200 mb-2">
-            How it works:
-          </h4>
-          <div className="text-slate-300">
-            {selectedAlgorithm.category === 'sorting' && (
-              <ul className="list-disc list-inside space-y-1">
-                <li>Watch as elements are compared and swapped</li>
-                <li>Observe the step-by-step sorting process</li>
-                <li>Notice how the algorithm maintains its invariant</li>
-              </ul>
-            )}
-            {selectedAlgorithm.category === 'graph' && (
-              <ul className="list-disc list-inside space-y-1">
-                <li>See how nodes are visited and explored</li>
-                <li>Watch the algorithm traverse the graph structure</li>
-                <li>Observe the pathfinding decision-making process</li>
-              </ul>
-            )}
-            {selectedAlgorithm.category === 'pathfinding' && (
-              <ul className="list-disc list-inside space-y-1">
-                <li>Watch the algorithm explore possible paths</li>
-                <li>See how it evaluates and chooses the best route</li>
-                <li>Observe the final optimal path being constructed</li>
-              </ul>
-            )}
-          </div>
-        </div>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { getAlgorithmsByCategory } from '@/data/algorithms';
 import { useAlgorithm } from '@/context/AlgorithmContext';
@@ -8,15 +8,25 @@ import { Algorithm } from '@/types/algorithm';
 import { cn } from '@/lib/utils';
 import { Play, Lock } from 'lucide-react';
 
-const categories = [
+export const ALGORITHM_CATEGORIES = [
   { id: 'sorting', name: 'Sorting', color: 'bg-blue-500' },
   { id: 'graph', name: 'Graph', color: 'bg-green-500' },
   { id: 'pathfinding', name: 'Pathfinding', color: 'bg-purple-500' },
   { id: 'tree', name: 'Tree', color: 'bg-orange-500' },
 ];
 
-export default function AlgorithmSelector() {
-  const [selectedCategory, setSelectedCategory] = useState('sorting');
+interface AlgorithmSelectorProps {
+  selectedCategory?: string;
+  hideCategoryTabs?: boolean;
+}
+
+export default function AlgorithmSelector({ selectedCategory: externalSelectedCategory, hideCategoryTabs = false }: AlgorithmSelectorProps) {
+  const [selectedCategory, setSelectedCategory] = useState(externalSelectedCategory ?? 'sorting');
+  useEffect(() => {
+    if (externalSelectedCategory) {
+      setSelectedCategory(externalSelectedCategory);
+    }
+  }, [externalSelectedCategory]);
   const { selectedAlgorithm, setSelectedAlgorithm } = useAlgorithm();
 
   const handleAlgorithmSelect = (algorithm: Algorithm) => {
@@ -32,22 +42,24 @@ export default function AlgorithmSelector() {
       </h2>
       
       {/* Category Tabs */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        {categories.map((category) => (
-          <button
-            key={category.id}
-            onClick={() => setSelectedCategory(category.id)}
-            className={cn(
-              'px-3 py-1.5 rounded-full text-sm font-medium transition-colors',
-              selectedCategory === category.id
-                ? 'bg-blue-600/20 text-blue-200 border border-blue-600/40'
-                : 'bg-transparent text-slate-300 hover:bg-white/5 border border-white/10'
-            )}
-          >
-            {category.name}
-          </button>
-        ))}
-      </div>
+      {!hideCategoryTabs && (
+        <div className="flex flex-wrap gap-2 mb-6">
+          {ALGORITHM_CATEGORIES.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => setSelectedCategory(category.id)}
+              className={cn(
+                'px-3 py-1.5 rounded-full text-sm font-medium transition-colors',
+                selectedCategory === category.id
+                  ? 'bg-blue-600/20 text-blue-200 border border-blue-600/40'
+                  : 'bg-transparent text-slate-300 hover:bg-white/5 border border-white/10'
+              )}
+            >
+              {category.name}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Algorithm List */}
       <div className="space-y-2">
