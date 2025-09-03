@@ -5,7 +5,7 @@ import LiveSortingPreview from './LiveSortingPreview';
 import { BackgroundGradient } from './ui/background-gradient';
 import { HoverBorderGradient } from './ui/hover-border-gradient';
 import Link from 'next/link';
-import { Github, Star } from 'lucide-react';
+import { Star } from 'lucide-react';
 
 export default function LandingHero() {
   return (

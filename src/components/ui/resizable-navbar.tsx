@@ -8,8 +8,9 @@ import {
   useMotionValueEvent,
 } from "motion/react";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 
 interface NavbarProps {
@@ -198,6 +199,15 @@ export const MobileNavMenu = ({
   isOpen,
   onClose,
 }: MobileNavMenuProps) => {
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [isOpen, onClose]);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -243,9 +253,10 @@ export const MobileNavToggle = ({
 
 export const NavbarLogo = () => {
   return (
-    <a
+    <Link
       href="/"
       className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
+      aria-label="AlgViz Home"
     >
       <Image
         src="/AlgViz_dark.svg"
@@ -254,7 +265,7 @@ export const NavbarLogo = () => {
         height={40}
         priority
       />
-    </a>
+    </Link>
   );
 };
 
